@@ -1,0 +1,105 @@
+from fixture.predefined_slots import FRUIT, MUMMY, REELS, DISCO, DRAGON, MAJESTIC, BELLS, GANGSTER, BLAZINGFRUITS
+
+predefined_classes = {}
+predefined_classes[FRUIT.name] = {0: 'cherry',
+                                  1: 'grape',
+                                  2: 'watermelon',
+                                  3: 'lemon',
+                                  4: 'orange',
+                                  5: 'plum',
+                                  6: 'star',
+                                  7: 'seven'}
+
+predefined_classes[REELS.name] = {0: 'cherry',
+                                  1: 'grape',
+                                  2: 'watermelon',
+                                  3: 'lemon',
+                                  4: 'orange',
+                                  5: 'plum',
+                                  6: 'seven',
+                                  7: 'chest'}
+
+predefined_classes[MUMMY.name] = {0: '10',
+                                  1: 'J',
+                                  2: 'Q',
+                                  3: 'K',
+                                  4: 'A',
+                                  5: 'SphinxFace',
+                                  6: 'SphinxBody',
+                                  7: 'Tomb',
+                                  8: 'Scarab',
+                                  9: 'Mummy'}
+
+predefined_classes[DISCO.name] = {0: '9',
+                                  1: '10',
+                                  2: 'Q',
+                                  3: 'K',
+                                  4: 'Clef',
+                                  5: 'DancerSingle',
+                                  6: 'DancerMultiple',
+                                  7: 'Equalizer',
+                                  8: 'Vinyl',
+                                  9: 'VinylJ',
+                                  10: 'VinylQ',
+                                  11: 'VinylK',
+                                  12: 'Halo',
+                                  13: 'DiscoBall',
+                                  14: 'DJ'}
+
+predefined_classes[DRAGON.name] = {0: '9',
+                                   1: '10',
+                                   2: 'J',
+                                   3: 'Q',
+                                   4: 'K',
+                                   5: 'A',
+                                   6: 'Coin',
+                                   7: 'Cat',
+                                   8: 'Tiger',
+                                   9: 'Text',
+                                   10: 'YinYang',
+                                   11: 'House',
+                                   12: 'Fan',
+                                   13: 'Dragon'}
+
+predefined_classes[MAJESTIC.name] = {0: 'Stars',
+                                     1: 'SingleBar',
+                                     2: 'DoubleBar',
+                                     3: 'TripleBar',
+                                     4: 'Orange',
+                                     5: 'Lemon',
+                                     6: 'Cherry',
+                                     7: 'Sevens',
+                                     8: 'Bell'}
+
+predefined_classes[BELLS.name] = {0: 'Cherry',
+                                  1: 'Plum',
+                                  2: 'Lemon',
+                                  3: 'Orange',
+                                  4: 'Watermelon',
+                                  5: 'Grape',
+                                  6: 'SingleBar',
+                                  7: 'DoubleBar',
+                                  8: 'TripleBar',
+                                  9: 'Bell'}
+
+predefined_classes[GANGSTER.name] = {0: 'Dynamite',
+                                     1: 'Hat',
+                                     2: 'Money',
+                                     3: 'Kegs',
+                                     4: 'Car',
+                                     5: 'TommyGun',
+                                     6: 'Safe',
+                                     7: 'Whiskey',
+                                     8: 'Ammo',
+                                     9: 'Pistol',
+                                     10: 'Moneybag',
+                                     11: 'Boss'}
+
+predefined_classes[BLAZINGFRUITS.name] = {0: 'Cherry',
+                                          1: 'Lemon',
+                                          2: 'Grape',
+                                          3: 'Orange',
+                                          4: 'Watermelon',
+                                          5: 'Plum',
+                                          6: 'Star',
+                                          7: 'Seven'}
