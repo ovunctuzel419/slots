@@ -1,11 +1,14 @@
 import os.path
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 import numpy as np
 from attrs import field, define
 
+from app.localization import PositionEstimator, PositionEstimationResult, PositionEstimationStatus
+from app.payout import PayoutEstimator
 from fixture.legend import get_class_icon_paths
 from fixture.predefined_slots import SlotsGame, available_games
+from utils.constants import MAX_REELS_IN_GAME
 from utils.custom_types import IconSet
 
 
@@ -15,7 +18,12 @@ class AppContext:
     legend_icon_paths: List[str] = field(factory=list)
     legend_icon_names: List[str] = field(factory=list)
     current_icon_set: IconSet = np.zeros((3, 5), dtype=int) - 1
+    current_relative_reel_index: int = 0
     current_cursor_index: int = 0
+    current_payout_page_index: int = 0
+    current_bet: int = 50
+    payout_estimator: Optional[PayoutEstimator] = None
+    _position_estimator: PositionEstimator = field(init=False)
 
     def get_available_games(self) -> List[SlotsGame]:
         return available_games
@@ -29,8 +37,14 @@ class AppContext:
         print("Selected game:", selected_game)
 
         self.current_game = selected_game
+        self.current_icon_set = np.zeros((selected_game.rows, selected_game.cols), dtype=int) - 1
+        self._position_estimator = PositionEstimator(slots_game=selected_game)
+        self.payout_estimator = PayoutEstimator.from_game(game=selected_game)
         self.legend_icon_paths = get_class_icon_paths(selected_game.dataset_folder_path)
         self.legend_icon_names = [f"{os.path.basename(os.path.dirname(icon_path))}" for icon_path in self.legend_icon_paths]
+        self.current_relative_reel_index = 0
+        self.current_payout_page_index = 0
+        self.current_cursor_index = 0
 
     def on_click_legend_button(self, index: int):
         row = self.current_cursor_index // self.current_icon_set.shape[1]
@@ -43,9 +57,45 @@ class AppContext:
 
     def on_click_clear_all(self):
         self.current_cursor_index = 0
-        self.current_icon_set = np.zeros((3, 5), dtype=int) - 1
+        self.current_relative_reel_index = 0
+        self.current_icon_set = np.zeros((self.current_game.rows, self.current_game.cols), dtype=int) - 1
+        self._position_estimator.reset()
 
-    def get_position_estimate(self) -> Tuple[int, float]:
-        if self.current_cursor_index < self.current_icon_set.shape[0] * self.current_icon_set.shape[1]:
-            return -1, 0.0
-        return 1234, 0.99
+    def on_click_next_entry(self):
+        self.current_cursor_index = 0
+        self.current_relative_reel_index += 1
+        self.current_icon_set = np.zeros((self.current_game.rows, self.current_game.cols), dtype=int) - 1
+
+    def on_click_next_payout_page(self):
+        self.current_payout_page_index = min(MAX_REELS_IN_GAME, self.current_payout_page_index + 1)
+
+    def on_click_prev_payout_page(self):
+        self.current_payout_page_index = max(0, self.current_payout_page_index - 1)
+
+    def get_position_estimate(self) -> PositionEstimationResult:
+        if np.any(self.current_icon_set == -1):
+            return PositionEstimationResult(PositionEstimationStatus.UNKNOWN)
+        self._position_estimator.update(self.current_icon_set, self.current_relative_reel_index)
+        return self._position_estimator.get_position_estimate()
+
+    def get_payout_estimate(self, position_index: int, iterations: int) -> int:
+        if self.payout_estimator is None:
+            print("ERROR: No payout estimator available.")
+            return -1
+
+        estimate = self.payout_estimator.estimate(position_index, iterations=iterations) * self.current_bet - self.current_bet * iterations
+        return estimate
+
+    def check_bonus(self, position_index: int) -> bool:
+        if self.payout_estimator is None:
+            print("ERROR: No payout estimator available.")
+            return False
+
+        return self.payout_estimator.check_bonus(position_index)
+
+    def get_current_payout(self):
+        position_estimate = self.get_position_estimate()
+        if position_estimate.confidence < 0.7:
+            return -1
+
+        return self.payout_estimator.estimate(position_estimate.position, 1)

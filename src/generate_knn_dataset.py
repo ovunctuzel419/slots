@@ -7,7 +7,8 @@ import cv2
 
 from fixture.predefined_classes import predefined_classes
 from fixture.predefined_extractors import extractor_map
-from fixture.predefined_slots import DEMO, MUMMY, REELS, DRAGON, MAJESTIC, BELLS, GANGSTER, BLAZINGFRUITS
+from fixture.predefined_slots import DEMO, MUMMY, REELS, DRAGON, MAJESTIC, BELLS, GANGSTER, BLAZINGFRUITS, MEGAREELS, \
+    DISCO, CRYSTALTREASURE, REELSDELUXE, VULCAN, ICEDFRUITS
 from utils.custom_types import BGRImageArray
 
 
@@ -47,10 +48,10 @@ key_to_index = {ord('0'): 0,
 index_to_key = {value: key for key, value in key_to_index.items()}
 
 if __name__ == '__main__':
-    video_path = BLAZINGFRUITS.video_folder_path
-    extractor = extractor_map[BLAZINGFRUITS.name]
+    video_path = ICEDFRUITS.video_folder_path
+    extractor = extractor_map[ICEDFRUITS.name]
 
-    classes = predefined_classes[BLAZINGFRUITS.name]
+    classes = predefined_classes[ICEDFRUITS.name]
     print(f'Classes:\n' + str.join('\n', [f'{chr(index_to_key[index])}: {class_name}' for index, class_name in classes.items()]))
     sample_count_per_class = 10
     samples_per_class = {key: 0 for key in classes}
@@ -58,7 +59,7 @@ if __name__ == '__main__':
         for j, icon in enumerate(extractor.icon_extractor.extract_icons(subframe)):
             # Sample difficult examples more
             difficult_frame_indices = 3, 5
-            difficult_icon_indices = 5, 9, 10, 14 #, 15, 19
+            difficult_icon_indices = 5, 9, 10, 14, 15, 19
             is_difficult_frame = any([(i % 9) in difficult_frame_indices])
             is_difficult_icon = j in difficult_icon_indices
             if not (is_difficult_icon and is_difficult_frame) and random.random() < 0.9:

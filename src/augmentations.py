@@ -5,7 +5,8 @@ import shutil
 import cv2
 import numpy as np
 
-from fixture.predefined_slots import MUMMY, REELS, DRAGON, MAJESTIC, BELLS, GANGSTER, BLAZINGFRUITS
+from fixture.predefined_slots import MUMMY, REELS, DRAGON, MAJESTIC, BELLS, GANGSTER, BLAZINGFRUITS, MEGAREELS, DISCO, \
+    REELSDELUXE, CRYSTALTREASURE, VULCAN, ICEDFRUITS
 from utils.custom_types import BGRImageArray
 
 
@@ -93,4 +94,4 @@ def augment_dataset(dataset_path: str, iters: int = 1):
 #         cv2.waitKey()
 
 if __name__ == '__main__':
-    augment_dataset(BLAZINGFRUITS.dataset_folder_path.replace('_augmented', ''), 9)
+    augment_dataset(VULCAN.dataset_folder_path.replace('_augmented', ''), 9)

@@ -58,7 +58,7 @@ class TrainedClassifier:
             print("This is a", self._class_index_to_name[pred_index])
             print(f"Confidence: {confidence:.4f}")
 
-        if confidence < 0.7:
+        if confidence < 0.85:
             model_suffix = os.path.basename(self.model_path).split(".")[0]
             os.makedirs('../ambiguous', exist_ok=True)
             os.makedirs(f'../ambiguous/{model_suffix}', exist_ok=True)
@@ -80,7 +80,7 @@ class TrainedClassifier:
         for i in range(len(icon_list)):
             frame_index = int(self._icon_index_total / (self.rows * self.cols))
             icon_index = self._icon_index_total % (self.rows * self.cols)
-            if confidences[i] < 0.7:
+            if confidences[i] < 0.85:
                 model_suffix = os.path.basename(self.model_path).split(".")[0]
                 os.makedirs(f'../ambiguous/{model_suffix}', exist_ok=True)
                 filename = f"../ambiguous/{model_suffix}/{frame_index}_{icon_index}_{self._class_index_to_name[pred_indices[i].item()]}.png"
