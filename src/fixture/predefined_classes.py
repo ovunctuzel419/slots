@@ -1,4 +1,5 @@
-from fixture.predefined_slots import FRUIT, MUMMY, REELS, DISCO, DRAGON, MAJESTIC, BELLS, GANGSTER, BLAZINGFRUITS
+from fixture.predefined_slots import FRUIT, MUMMY, REELS, DISCO, DRAGON, MAJESTIC, BELLS, GANGSTER, BLAZINGFRUITS, \
+    MEGAREELS, REELSDELUXE, CRYSTALTREASURE, VULCAN, ICEDFRUITS
 
 predefined_classes = {}
 predefined_classes[FRUIT.name] = {0: 'cherry',
@@ -32,19 +33,20 @@ predefined_classes[MUMMY.name] = {0: '10',
 
 predefined_classes[DISCO.name] = {0: '9',
                                   1: '10',
-                                  2: 'Q',
-                                  3: 'K',
-                                  4: 'Clef',
-                                  5: 'DancerSingle',
-                                  6: 'DancerMultiple',
-                                  7: 'Equalizer',
-                                  8: 'Vinyl',
-                                  9: 'VinylJ',
-                                  10: 'VinylQ',
-                                  11: 'VinylK',
-                                  12: 'Halo',
-                                  13: 'DiscoBall',
-                                  14: 'DJ'}
+                                  2: 'J',
+                                  3: 'Q',
+                                  4: 'K',
+                                  5: 'Clef',
+                                  6: 'DancerSingle',
+                                  7: 'DancerMultiple',
+                                  8: 'Equalizer',
+                                  9: 'Vinyl',
+                                  10: 'VinylJ',
+                                  11: 'VinylQ',
+                                  12: 'VinylK',
+                                  13: 'Halo',
+                                  14: 'DiscoBall',
+                                  15: 'DJ'}
 
 predefined_classes[DRAGON.name] = {0: '9',
                                    1: '10',
@@ -70,6 +72,15 @@ predefined_classes[MAJESTIC.name] = {0: 'Stars',
                                      6: 'Cherry',
                                      7: 'Sevens',
                                      8: 'Bell'}
+
+predefined_classes[MEGAREELS.name] = {0: 'DoubleCherry',
+                                      1: 'DoubleLemon',
+                                      2: 'DoubleOrange',
+                                      3: 'DoubleGrape',
+                                      4: 'DoublePlum',
+                                      5: 'DoubleBar',
+                                      6: 'DoubleStar',
+                                      7: 'DoubleSeven'}
 
 predefined_classes[BELLS.name] = {0: 'Cherry',
                                   1: 'Plum',
@@ -103,3 +114,45 @@ predefined_classes[BLAZINGFRUITS.name] = {0: 'Cherry',
                                           5: 'Plum',
                                           6: 'Star',
                                           7: 'Seven'}
+
+predefined_classes[REELSDELUXE.name] = {0: 'Cherry',
+                                        1: 'Lemon',
+                                        2: 'Grape',
+                                        3: 'Orange',
+                                        4: 'Watermelon',
+                                        5: 'Plum',
+                                        6: 'Chest',
+                                        7: 'Seven'}
+
+predefined_classes[CRYSTALTREASURE.name] = {0: 'Key',
+                                            1: 'Amethyst',
+                                            2: 'Ruby',
+                                            3: 'Sapphire',
+                                            4: 'Emerald',
+                                            5: 'Crown',
+                                            6: 'GoldBar',
+                                            7: 'Chest'}
+
+predefined_classes[VULCAN.name] = {0: 'J',
+                                   1: 'Q',
+                                   2: 'K',
+                                   3: 'A',
+                                   4: 'TreasureMap',
+                                   5: 'Coconut',
+                                   6: 'Pineapple',
+                                   7: 'GoldenIdol',
+                                   8: 'StoneIdol',
+                                   9: 'GreenIdol',
+                                   10: 'Volcano',
+                                   11: 'PalmTree',
+                                   12: 'Wild'}
+
+predefined_classes[ICEDFRUITS.name] = {0: 'Cherry',
+                                       1: 'Lemon',
+                                       2: 'Watermelon',
+                                       3: 'Orange',
+                                       4: 'Plum',
+                                       5: 'Grape',
+                                       6: 'Bell',
+                                       7: 'Seven',
+                                       8: 'Wild'}

@@ -5,13 +5,13 @@ import numpy as np
 
 from classification import TrainedClassifier
 from fixture.predefined_extractors import extractor_map
-from fixture.predefined_slots import DEMO, FRUIT, MUMMY, REELS, DRAGON, MAJESTIC, GANGSTER, BLAZINGFRUITS
+from fixture.predefined_slots import DEMO, FRUIT, MUMMY, REELS, DRAGON, MAJESTIC, GANGSTER, BLAZINGFRUITS, MEGAREELS, \
+    DISCO, CRYSTALTREASURE, REELSDELUXE, VULCAN, ICEDFRUITS
 from utils.visualization import visualize_icon_set
 
 
-# 5535
 if __name__ == '__main__':
-    slots_game = BLAZINGFRUITS
+    slots_game = ICEDFRUITS
     dataset_path = slots_game.dataset_folder_path
     extractor = extractor_map[slots_game.name]
     rows = extractor.icon_extractor.grid_crop.rows
