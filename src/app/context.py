@@ -6,6 +6,7 @@ from attrs import field, define
 
 from app.localization import PositionEstimator, PositionEstimationResult, PositionEstimationStatus
 from app.payout import PayoutEstimator
+from app.ruleset import PayoutEstimate
 from fixture.legend import get_class_icon_paths
 from fixture.predefined_slots import SlotsGame, available_games
 from utils.constants import MAX_REELS_IN_GAME
@@ -56,10 +57,12 @@ class AppContext:
         self.current_cursor_index += 1
 
     def on_click_clear_all(self):
+        self.current_payout_page_index = 0
         self.current_cursor_index = 0
         self.current_relative_reel_index = 0
         self.current_icon_set = np.zeros((self.current_game.rows, self.current_game.cols), dtype=int) - 1
         self._position_estimator.reset()
+        self.payout_estimator.reset()
 
     def on_click_next_entry(self):
         self.current_cursor_index = 0
@@ -72,18 +75,24 @@ class AppContext:
     def on_click_prev_payout_page(self):
         self.current_payout_page_index = max(0, self.current_payout_page_index - 1)
 
+    def on_click_undo(self):
+        if not np.all(self.current_icon_set == -1):
+            self.current_cursor_index -= 1
+            self.current_icon_set[self.current_cursor_index // self.current_icon_set.shape[1],
+                                  self.current_cursor_index % self.current_icon_set.shape[1]] = -1
+
     def get_position_estimate(self) -> PositionEstimationResult:
         if np.any(self.current_icon_set == -1):
             return PositionEstimationResult(PositionEstimationStatus.UNKNOWN)
         self._position_estimator.update(self.current_icon_set, self.current_relative_reel_index)
         return self._position_estimator.get_position_estimate()
 
-    def get_payout_estimate(self, position_index: int, iterations: int) -> int:
+    def get_payout_estimate(self, position_index: int, iterations: int) -> PayoutEstimate:
         if self.payout_estimator is None:
             print("ERROR: No payout estimator available.")
             return -1
 
-        estimate = self.payout_estimator.estimate(position_index, iterations=iterations) * self.current_bet - self.current_bet * iterations
+        estimate = self.payout_estimator.estimate(position_index, iterations=iterations, bet=self.current_bet)
         return estimate
 
     def check_bonus(self, position_index: int) -> bool:
