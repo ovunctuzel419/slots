@@ -1,6 +1,7 @@
 from abc import abstractmethod, ABC
-from typing import List
+from typing import List, Tuple, Dict
 
+import attrs
 import numpy as np
 from attrs import define
 
@@ -10,12 +11,38 @@ Line = List[int]
 
 
 @define
+class PayoutEstimate:
+    payout: float
+    free_games: int = 0
+    multiplier_2x: int = 0
+    mystery_multiplier_count: int = 0
+    next_round_column_replace_bonus: Dict[int, int] = attrs.field(factory=dict)  # Change column [key] to [value] next round
+
+    @classmethod
+    def no_reward(cls) -> 'PayoutEstimate':
+        return PayoutEstimate(payout=0)
+
+    def __add__(self, other: 'PayoutEstimate') -> 'PayoutEstimate':
+        return PayoutEstimate(
+            payout=self.payout + other.payout,
+            free_games=self.free_games + other.free_games,
+            multiplier_2x=self.multiplier_2x + other.multiplier_2x,
+            mystery_multiplier_count=self.mystery_multiplier_count + other.mystery_multiplier_count,
+            next_round_column_replace_bonus=self.next_round_column_replace_bonus | other.next_round_column_replace_bonus
+        )
+
+
+@define(kw_only=True)
 class Rule(ABC):
     symbol_index: int
-    payout: int
+    payout: float
+    free_games_bonus: int = 0
+    multiplier_2x_bonus: int = 0
+    mystery_multiplier_count: int = 0
+    next_round_column_replace_bonus: Dict[int, int] = attrs.field(factory=dict)
 
     @abstractmethod
-    def calculate_payout(self, icon_set: IconSet, line: Line):
+    def calculate_payout(self, icon_set: IconSet, line: Line) -> PayoutEstimate:
         pass
 
     def scores_every_line(self) -> bool:
@@ -24,69 +51,137 @@ class Rule(ABC):
     def only_this_can_score(self) -> bool:
         return False
 
+    def get_payout(self):
+        return PayoutEstimate(payout=self.payout,
+                              free_games=self.free_games_bonus,
+                              multiplier_2x=self.multiplier_2x_bonus,
+                              mystery_multiplier_count=self.mystery_multiplier_count,
+                              next_round_column_replace_bonus=self.next_round_column_replace_bonus)
 
-@define
+
+@define(kw_only=True)
 class MatchLeftRule(Rule):
-    num_matches: int
+    num_matches: int = -1
+    wild_symbol: int = -1
 
-    def calculate_payout(self, icon_set: IconSet, line: Line):
+    def calculate_payout(self, icon_set: IconSet, line: Line) -> PayoutEstimate:
+        icon_set = icon_set.copy()
+        if self.wild_symbol != -1:
+            icon_set = np.where(icon_set == self.wild_symbol, self.symbol_index, icon_set)
+
         symbols = icon_set[np.array(line), np.arange(len(line))]
-        # print(f"These are the symbols matching this line {line}: ", symbols)
-        # print(f"Full icon set:\n{icon_set}")
         next_differs = (self.num_matches == len(symbols) or symbols[self.num_matches] != self.symbol_index)
         if np.all(symbols[:self.num_matches] == self.symbol_index) and next_differs:
-            return self.payout
-        return 0
+            print(f"Matched rule {self}, iconset: {icon_set}, line: {line}, payout: {self.get_payout()}")
+            return self.get_payout()
+        return PayoutEstimate.no_reward()
 
 
-@define
+@define(kw_only=True)
+class MatchLeftOrRightWithWildColumnRule(Rule):
+    num_matches: int = -1
+    wild_symbol: int = -1
+
+    def calculate_payout(self, icon_set: IconSet, line: Line) -> PayoutEstimate:
+        if self.wild_symbol != -1:
+            icon_set = icon_set.copy()
+            # Identify wild columns, replace entire wild columns with the symbol_index
+            wild_cols = np.any(icon_set == self.wild_symbol, axis=0)
+            self.next_round_column_replace_bonus = {i: self.wild_symbol for i in np.where(wild_cols)[0]}
+            icon_set[:, wild_cols] = self.symbol_index
+
+        symbols = icon_set[np.array(line), np.arange(len(line))]
+        # Match left
+        next_differs = (self.num_matches == len(symbols) or symbols[self.num_matches] != self.symbol_index)
+        if np.all(symbols[:self.num_matches] == self.symbol_index) and next_differs:
+            print(f"Matched rule {self}, iconset: {icon_set}, line: {line}, payout: {self.get_payout()}")
+            return self.get_payout()
+
+        # Match right
+        next_differs = (self.num_matches == len(symbols) or symbols[len(symbols) - self.num_matches - 1] != self.symbol_index)
+        if np.all(symbols[-self.num_matches:] == self.symbol_index) and next_differs:
+            print(f"Matched rule {self}, iconset: {icon_set}, line: {line}, payout: {self.get_payout()}")
+            return self.get_payout()
+        return PayoutEstimate.no_reward()
+
+
+@define(kw_only=True)
+class MatchAnyPositionWithWildBonusRule(Rule):
+    num_matches: int = -1
+    wild_symbol: int = -1
+
+    def calculate_payout(self, icon_set: IconSet, line: Line) -> PayoutEstimate:
+        symbols = icon_set[np.array(line), np.arange(len(line))]
+        for start in range(len(symbols) - self.num_matches + 1):
+            window = symbols[start:start + self.num_matches]
+            matches = [(s == self.symbol_index or s == self.wild_symbol) for s in window]
+
+            if not all(matches):
+                continue
+
+            # Check if it's *exactly* num_matches (no continuation before/after)
+            before_ok = (start == 0 or symbols[start - 1] not in (self.symbol_index, self.wild_symbol))
+            after_ok = (start + self.num_matches == len(symbols) or symbols[start + self.num_matches] not in (self.symbol_index, self.wild_symbol))
+
+            if before_ok and after_ok:
+                used_wild = any(s == self.wild_symbol for s in window)
+                payout = self.get_payout()
+                payout.mystery_multiplier_count = 1 if used_wild else 0
+                print(f"Matched rule {self}, symbols: {symbols}, used wild: {used_wild}, payout: {payout}")
+                return payout
+
+        return PayoutEstimate.no_reward()
+
+
+@define(kw_only=True)
 class FixedConfigurationRule(Rule):
     expected_icon_set: IconSet
 
     def calculate_payout(self, icon_set: IconSet, line: Line):
         if np.all(icon_set == self.expected_icon_set):
-            return self.payout
-        return 0
+            return self.get_payout()
+        return PayoutEstimate.no_reward()
 
     def only_this_can_score(self) -> bool:
         return True
 
 
-@define
+@define(kw_only=True)
 class AllSameRule(Rule):
     def calculate_payout(self, icon_set: IconSet, line: Line):
         if np.all(icon_set == self.symbol_index):
-            return self.payout
-        return 0
+            return self.get_payout()
+        return PayoutEstimate.no_reward()
 
     def only_this_can_score(self) -> bool:
         return True
 
-@define
+@define(kw_only=True)
 class ScatterRule(Rule):
     num_matches: int
 
     def calculate_payout(self, icon_set: IconSet, line: Line):
         if np.sum(icon_set == self.symbol_index) == self.num_matches:
-            return self.payout
-        return 0
+            return self.get_payout()
+        return PayoutEstimate.no_reward()
 
     def scores_every_line(self) -> bool:
         return False
 
 
-@define
+@define(kw_only=True)
 class Ruleset:
     lines: List[Line]
     rules: List[Rule]
 
-    def calculate_payout(self, icon_set: IconSet):
-        total_payout = 0
+    def calculate_payout(self, icon_set: IconSet) -> PayoutEstimate:
+        total_payout = PayoutEstimate.no_reward()
+
         # Check special rules
         for rule in [rule for rule in self.rules if rule.only_this_can_score()]:
-            total_payout += rule.calculate_payout(icon_set, [])
-            if total_payout > 0:
-                return total_payout
+            special_payout = rule.calculate_payout(icon_set, [])
+            if special_payout != PayoutEstimate.no_reward():
+                return special_payout
 
         # For each line, calculate payout
         for line in self.lines:
@@ -95,5 +190,4 @@ class Ruleset:
 
         for rule in [rule for rule in self.rules if not rule.scores_every_line() and not rule.only_this_can_score()]:
             total_payout += rule.calculate_payout(icon_set, [])
-        print("Total payout: ", total_payout)
         return total_payout

@@ -29,7 +29,6 @@ class FrameExtractor:
         for video_path in video_paths:
             cap = cv2.VideoCapture(video_path)
             # cap.set(cv2.CAP_PROP_POS_FRAMES, 400000)  # 223937
-            cap.set(cv2.CAP_PROP_POS_FRAMES, cap.get(cv2.CAP_PROP_FRAME_COUNT) - 5)
 
             while cap.isOpened():
                 frame = self._get_next_frame_with_change(cap)
