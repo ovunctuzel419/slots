@@ -78,17 +78,45 @@ class MatchLeftRule(Rule):
 
 
 @define(kw_only=True)
+class ExistsInEveryReelRule(Rule):
+    symbol_indices: List[int]
+    wild_symbol: int = -1
+
+    def calculate_payout(self, icon_set: IconSet, line: Line) -> PayoutEstimate:
+        icon_set = icon_set.copy()
+
+        # Treat wilds as matching all valid symbols
+        if self.wild_symbol != -1:
+            for idx in self.symbol_indices:
+                icon_set = np.where(icon_set == self.wild_symbol, idx, icon_set)
+
+        # Check each column (reel)
+        for col in range(icon_set.shape[1]):
+            if not np.any(np.isin(icon_set[:, col], self.symbol_indices)):
+                return PayoutEstimate.no_reward()
+
+        print(f"Matched rule {self}, iconset: {icon_set}, payout: {self.get_payout()}")
+        return self.get_payout()
+
+    def scores_every_line(self) -> bool:
+        return False
+
+
+@define(kw_only=True)
 class MatchLeftOrRightWithWildColumnRule(Rule):
     num_matches: int = -1
     wild_symbol: int = -1
+    special_wild_symbol: int = -1  # This one doesn't replace a column but counts as a match
 
     def calculate_payout(self, icon_set: IconSet, line: Line) -> PayoutEstimate:
         if self.wild_symbol != -1:
             icon_set = icon_set.copy()
             # Identify wild columns, replace entire wild columns with the symbol_index
             wild_cols = np.any(icon_set == self.wild_symbol, axis=0)
-            self.next_round_column_replace_bonus = {i: self.wild_symbol for i in np.where(wild_cols)[0]}
+            special_wild_cols = np.any(icon_set == self.special_wild_symbol, axis=0)
+            self.next_round_column_replace_bonus = {i: self.special_wild_symbol for i in np.where(wild_cols)[0]}
             icon_set[:, wild_cols] = self.symbol_index
+            icon_set[:, special_wild_cols] = self.symbol_index
 
         symbols = icon_set[np.array(line), np.arange(len(line))]
         # Match left
@@ -102,7 +130,10 @@ class MatchLeftOrRightWithWildColumnRule(Rule):
         if np.all(symbols[-self.num_matches:] == self.symbol_index) and next_differs:
             print(f"Matched rule {self}, iconset: {icon_set}, line: {line}, payout: {self.get_payout()}")
             return self.get_payout()
-        return PayoutEstimate.no_reward()
+
+        no_payout_with_potential_bonus = PayoutEstimate.no_reward()
+        no_payout_with_potential_bonus.next_round_column_replace_bonus = self.next_round_column_replace_bonus
+        return no_payout_with_potential_bonus
 
 
 @define(kw_only=True)

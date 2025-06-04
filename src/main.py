@@ -130,19 +130,35 @@ class SlotPredictor:
     def refresh_payouts_panel(self, position_estimate: PositionEstimationResult):
         # - Payouts
         if position_estimate.position > 0:
+            # Current payout
+            current_payout_index = position_estimate.position
+            current_payout = self.context.get_payout_estimate(current_payout_index, iterations=1)
+            current_payout_text = self.build_payout_string(current_payout_index, current_payout)
+            current_payout_text = "Payout: " + current_payout_text[current_payout_text.find(":"):]
+            dpg.set_value("payout_text", current_payout_text)
+
+            # Future payouts
             for i in range(self.payout_page_size):
                 page_index = self.context.current_payout_page_index
                 payout_index = page_index * self.payout_page_size + position_estimate.position + i + 1
                 if payout_index < MAX_REELS_IN_GAME and position_estimate.status == PositionEstimationStatus.CONFIDENT:
                     dpg.show_item(f"payout_row_{i}")
                     payout = self.context.get_payout_estimate(payout_index - i, iterations=i + 1)
-                    prev_payout = self.context.get_payout_estimate(payout_index - i, iterations=i)
+
+                    # Previous payout, for green text
+                    if i == 0:
+                        if page_index == 0:
+                            prev_payout = current_payout
+                        else:
+                            prev_payout = self.context.get_payout_estimate(payout_index - i - 1 - self.payout_page_size, iterations=self.payout_page_size)
+                    else:
+                        prev_payout = self.context.get_payout_estimate(payout_index - i, iterations=i)
 
                     payout_row_text = self.build_payout_string(payout_index, payout)
                     dpg.set_value(f"payout_row_{i}", payout_row_text)
 
                     # Make positive payouts green
-                    if i > 0 and payout.payout - prev_payout.payout > -self.context.current_bet:
+                    if payout.payout - prev_payout.payout > -self.context.current_bet:
                         dpg.bind_item_theme(f"payout_row_{i}", create_green_text_theme())
                     else:
                         dpg.bind_item_theme(f"payout_row_{i}", create_white_text_theme())
@@ -252,6 +268,17 @@ class SlotPredictor:
         self.context.on_click_undo()
         self.set_context(self.context)
 
+    def on_debug_click(self):
+        print("Clicked debug button")
+        # self.context.current_icon_set = np.array(([1, 3, 4, 3, 3],
+        #                                           [1, 3, 4, 3, 3],
+        #                                           [1, 0, 4, 3, 6]))
+        self.context.current_icon_set = np.array(([0, 5, 0, 11, 1],
+                                                  [7, 15, 12, 5, 2],
+                                                  [1, 0, 1, 0, 12],
+                                                  [15, 6, 8, 15, 1]))
+        self.set_context(self.context)
+
     def build_ui(self):
         black_box_theme = create_black_theme()
 
@@ -293,6 +320,7 @@ class SlotPredictor:
                                     dpg.add_button(label="Clear", width=100, height=30, callback=self.on_clear_all_click, tag="clear_all_button")
                                     dpg.add_button(label="Next", width=100, height=30, callback=self.on_next_entry_click, tag="next_entry_button")
                                     dpg.add_button(label="Undo", width=60, height=30, callback=self.on_undo_click, tag="undo_button")
+                                    # dpg.add_button(label="Debug", width=60, height=30, callback=self.on_debug_click, tag="debug_button")
                                     dpg.hide_item("next_entry_button")
                             dpg.add_spacer(width=10)
                             # Bet selection
@@ -323,7 +351,7 @@ class SlotPredictor:
 
                 # PAYOUTS PANEL
                 with dpg.child_window(width=200, autosize_y=True, tag="PayoutsPanel"):
-                    # dpg.add_text("Payout:", tag="payout_text")
+                    dpg.add_text("Payout:", tag="payout_text")
                     dpg.add_text("Future payouts:", tag="payout_future_text")
                     for i in range(self.payout_page_size):
                         dpg.add_text("", tag=f"payout_row_{i}")

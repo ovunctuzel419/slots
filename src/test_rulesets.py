@@ -159,6 +159,29 @@ class TestIcedFruits(unittest.TestCase):
         self.assertEqual(1, payout.free_games)
 
 
+    def test_column_replacement(self):
+        icon_set = np.array([[4, 2, 1, 6, 6],
+                             [4, 2, 1, 6, 6],
+                             [4, 8, 8, 4, 1]])
+
+        payout = self.ruleset.calculate_payout(icon_set)
+        self.assertEqual(6800, payout.payout * self.bet)
+        self.assertEqual(1, payout.free_games)
+
+
+    def test_column_replacement_2(self):
+        icon_set = np.array([[0, 5, 2, 0, 2],
+                             [3, 5, 2, 0, 0],
+                             [3, 5, 0, 4, 0]])
+
+        payout = self.ruleset.calculate_payout(icon_set)
+        self.assertEqual(0, payout.payout * self.bet)
+
+        icon_set[0, 3] = 9  # Replaced with a 'special wild'
+        payout = self.ruleset.calculate_payout(icon_set)
+        self.assertEqual(300, payout.payout * self.bet)
+
+
 class TestGangster(unittest.TestCase):
     def setUp(self):
         self.ruleset = predefined_rulesets[GANGSTER.name]
@@ -205,6 +228,15 @@ class TestDragon(unittest.TestCase):
 
         payout = int(round(self.ruleset.calculate_payout(icon_set).payout * self.bet))
         self.assertEqual(320, payout)
+
+    def test_many_wild_match_3(self):
+        icon_set = np.array([[10, 6, 0, 3, 2],
+                             [5, 1, 9, 7, 7],
+                             [2, 8, 2, 4, 3],
+                             [0, 5, 8, 0, 11]])
+
+        payout = int(round(self.ruleset.calculate_payout(icon_set).payout * self.bet))
+        self.assertEqual(70, payout)
 
 
 class TestVulcan(unittest.TestCase):
@@ -279,3 +311,12 @@ class TestDisco(unittest.TestCase):
 
         payout = self.ruleset.calculate_payout(icon_set)
         self.assertEqual(820, int(round(payout.payout * self.bet)))
+
+    def test_vinyls(self):
+        icon_set = np.array([[9, 8, 8, 5, 15],
+                             [14, 1, 1, 15, 9],
+                             [5, 8, 5, 0, 6],
+                             [1, 0, 7, 6, 1]])
+
+        payout = self.ruleset.calculate_payout(icon_set)
+        self.assertEqual(40, int(round(payout.payout * self.bet)))

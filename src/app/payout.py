@@ -84,7 +84,6 @@ class PayoutEstimator:
 
             # 3. Get raw reward
             reward = self.ruleset.calculate_payout(icon_set_i)
-
             # 4. Apply multiplier
             if total.multiplier_2x > 0:
                 reward.payout *= 2
@@ -92,7 +91,11 @@ class PayoutEstimator:
 
             # 5. Accumulate
             total += reward
-            total.mystery_multiplier_count = reward.mystery_multiplier_count  # This is not cumulative
+            # Mystery multiplier is not cumulative
+            total.mystery_multiplier_count = reward.mystery_multiplier_count
+            # Column replace bonus is cleared if there is no streak
+            if reward.next_round_column_replace_bonus == {}:
+                total.next_round_column_replace_bonus = {}
 
             # Cache total at this index
             self._payout_cache[i] = copy.deepcopy(total)
