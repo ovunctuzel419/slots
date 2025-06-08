@@ -1,3 +1,6 @@
 dataset/**/*augmented*/**
 venv
 /ambiguous/
+/build/
+/dist/
+/venv/
