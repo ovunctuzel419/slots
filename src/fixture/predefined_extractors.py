@@ -1,7 +1,7 @@
 import os
 
 from change_detection import ChangeDetector, ChangeDetectorAntiCorruption
-from fixture.predefined_slots import DEMO, FRUIT, MUMMY, REELS, DISCO, DRAGON, MAJESTIC, BELLS, GANGSTER, BLAZINGFRUITS, \
+from fixture.predefined_slots import DEMO, BLAZINGHOT7, MUMMY, REELS, DISCO, DRAGON, MAJESTIC, BELLS, GANGSTER, BLAZINGFRUITS, \
     MEGAREELS, REELSDELUXE, CRYSTALTREASURE, VULCAN, ICEDFRUITS
 from frame_extractor import FrameExtractor
 from grid_crop import GridCrop
@@ -26,7 +26,7 @@ class FrameExtractorBuilder:
 
     @staticmethod
     def fruit() -> FrameExtractor:
-        game = FRUIT
+        game = BLAZINGHOT7
         video_paths = game.get_video_filepaths()
         subframe_finder = SubframeFinder(grid_crop=GridCrop(rows=3, cols=3, width=840, height=650, x_offset=85, y_offset=95, debug=False),
                                          background_colors=[(0, 0, 0), (255, 0, 0)],
@@ -286,7 +286,7 @@ class FrameExtractorBuilder:
 
 extractor_map = {
     DEMO.name: FrameExtractorBuilder.demo(),
-    FRUIT.name: FrameExtractorBuilder.fruit(),
+    BLAZINGHOT7.name: FrameExtractorBuilder.fruit(),
     MUMMY.name: FrameExtractorBuilder.mummy(),
     REELS.name: FrameExtractorBuilder.reels(),
     DISCO.name: FrameExtractorBuilder.disco(),

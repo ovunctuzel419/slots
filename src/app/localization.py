@@ -1,5 +1,6 @@
 import csv
 import os
+import time
 from enum import Enum
 from typing import Tuple, List, Dict
 
@@ -7,8 +8,9 @@ import attrs
 import numpy as np
 from attrs import define
 
+from app.csv_reader import CSVReader
 from fixture.predefined_slots import SlotsGame, GANGSTER
-from utils.common import csv_row_to_icon_set
+from utils.common import csv_row_to_icon_set, csv_rows_to_icon_sets_batch
 from utils.custom_types import IconSet
 
 
@@ -29,6 +31,7 @@ class PositionEstimationResult:
 @define
 class PositionEstimator:
     slots_game: SlotsGame
+    _csv_reader: CSVReader = CSVReader()
     _information: List[IconSet] = attrs.field(factory=list)
     _icon_sets: List[IconSet] = attrs.field(factory=list)
     _last_update_relative_reel_index: int = 0
@@ -36,11 +39,9 @@ class PositionEstimator:
 
     def __attrs_post_init__(self):
         # Skip the first header row
-        print("NOW IN : ", os.getcwd())
-        print(self.slots_game.get_csv_filepath())
-        rows = list(csv.reader(open(self.slots_game.get_csv_filepath())))[1:]
+        rows = self._csv_reader.read_lines(self.slots_game.get_csv_filepath(), skip_header=True)
         # Skip the first column and convert to int
-        self._icon_sets = [csv_row_to_icon_set(row, slots_game=self.slots_game) for row in rows if row]
+        self._icon_sets = csv_rows_to_icon_sets_batch(rows, slots_game=self.slots_game)
 
     def reset(self):
         self._information = []
@@ -50,8 +51,6 @@ class PositionEstimator:
     def update(self, current_icon_set: IconSet, current_relative_reel_index: int) -> None:
         if np.any(current_icon_set == -1):
             return
-        print("Update called", current_relative_reel_index, current_icon_set)
-        print("Infolen: ", len(self._information), "CRRI: ", current_relative_reel_index)
 
         self._last_update_relative_reel_index = current_relative_reel_index
         if len(self._information) < current_relative_reel_index + 1:

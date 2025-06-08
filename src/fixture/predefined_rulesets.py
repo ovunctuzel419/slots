@@ -2,7 +2,7 @@ import numpy as np
 
 from app.ruleset import Ruleset, MatchLeftRule, ScatterRule, FixedConfigurationRule, AllSameRule, \
     MatchAnyPositionWithWildBonusRule, MatchLeftOrRightWithWildColumnRule, ExistsInEveryReelRule
-from fixture.predefined_slots import BLAZINGFRUITS, MEGAREELS, BELLS, MUMMY, MAJESTIC, FRUIT, CRYSTALTREASURE, \
+from fixture.predefined_slots import BLAZINGFRUITS, MEGAREELS, BELLS, MUMMY, MAJESTIC, BLAZINGHOT7, CRYSTALTREASURE, \
     REELSDELUXE, ICEDFRUITS, REELS, GANGSTER, DRAGON, VULCAN, DISCO
 
 predefined_rulesets = {}  # noqa
@@ -218,7 +218,7 @@ predefined_rulesets[MAJESTIC.name] = Ruleset(
 )
 
 
-predefined_rulesets[FRUIT.name] = Ruleset(  # Blazing Hot7
+predefined_rulesets[BLAZINGHOT7.name] = Ruleset(  # Blazing Hot7
     lines=[[1, 1, 1, 1, 1],
            [0, 0, 0, 0, 0],
            [2, 2, 2, 2, 2],
@@ -440,6 +440,8 @@ predefined_rulesets[ICEDFRUITS.name] = Ruleset(
         MatchLeftOrRightWithWildColumnRule(symbol_index=7, payout=100, num_matches=5, wild_symbol=8, special_wild_symbol=9),
         # Wild free Game with at least one symbol
         ScatterRule(symbol_index=8, payout=0, free_games_bonus=1, num_matches=1),
+        ScatterRule(symbol_index=8, payout=0, free_games_bonus=1, num_matches=2),
+        ScatterRule(symbol_index=8, payout=0, free_games_bonus=1, num_matches=3),
     ]
 )
 
@@ -748,7 +750,7 @@ predefined_rulesets[DISCO.name] = Ruleset(
            [3, 1, 1, 1, 3],
            [3, 0, 0, 0, 3],
            [3, 2, 3, 2, 3],
-           [3, 1, 3, 1, 3],
+           [3, 1, 2, 1, 3],
            [3, 0, 1, 0, 3],
            [3, 0, 3, 0, 3],
            [2, 1, 1, 1, 2],
@@ -780,7 +782,7 @@ predefined_rulesets[DISCO.name] = Ruleset(
         MatchLeftRule(symbol_index=3, payout=4, num_matches=5, wild_symbol=9),
         # K
         MatchLeftRule(symbol_index=4, payout=0.2, num_matches=3, wild_symbol=9),
-        MatchLeftRule(symbol_index=4, payout=1, num_matches=4, wild_symbol=9),
+        MatchLeftRule(symbol_index=4, payout=1.2, num_matches=4, wild_symbol=9),
         MatchLeftRule(symbol_index=4, payout=4, num_matches=5, wild_symbol=9),
         # Clef
         MatchLeftRule(symbol_index=5, payout=0.6, num_matches=3, wild_symbol=9),

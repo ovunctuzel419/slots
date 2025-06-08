@@ -4,7 +4,7 @@ from typing import List
 import cv2
 import numpy as np
 
-from fixture.predefined_slots import SlotsGame, DEMO, FRUIT, MUMMY, REELS
+from fixture.predefined_slots import SlotsGame, DEMO, BLAZINGHOT7, MUMMY, REELS
 from utils.custom_types import BGRImageArray
 
 
@@ -57,7 +57,7 @@ def create_legend(slots_game: SlotsGame) -> BGRImageArray:
 
 
 if __name__ == '__main__':
-    slots_game = FRUIT
+    slots_game = BLAZINGHOT7
     legend = create_legend(slots_game)
     cv2.imshow('legend', legend)
     cv2.waitKey()

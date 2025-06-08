@@ -4,7 +4,7 @@ import numpy as np
 
 from app.payout import PayoutEstimator
 from fixture.predefined_rulesets import predefined_rulesets
-from fixture.predefined_slots import MEGAREELS, MUMMY, MAJESTIC, FRUIT, CRYSTALTREASURE, ICEDFRUITS, GANGSTER, DRAGON, \
+from fixture.predefined_slots import MEGAREELS, MUMMY, MAJESTIC, BLAZINGHOT7, CRYSTALTREASURE, ICEDFRUITS, GANGSTER, DRAGON, \
     VULCAN, DISCO
 
 
@@ -84,7 +84,7 @@ class TestMajestic(unittest.TestCase):
 
 class TestBlazingHot7(unittest.TestCase):
     def setUp(self):
-        self.ruleset = predefined_rulesets[FRUIT.name]
+        self.ruleset = predefined_rulesets[BLAZINGHOT7.name]
         self.bet = 100
 
     def test_many_cherries(self):
@@ -158,16 +158,14 @@ class TestIcedFruits(unittest.TestCase):
         self.assertEqual(0, payout.payout * self.bet)
         self.assertEqual(1, payout.free_games)
 
-
     def test_column_replacement(self):
         icon_set = np.array([[4, 2, 1, 6, 6],
                              [4, 2, 1, 6, 6],
                              [4, 8, 8, 4, 1]])
 
         payout = self.ruleset.calculate_payout(icon_set)
-        self.assertEqual(6800, payout.payout * self.bet)
+        self.assertEqual(6500, payout.payout * self.bet)
         self.assertEqual(1, payout.free_games)
-
 
     def test_column_replacement_2(self):
         icon_set = np.array([[0, 5, 2, 0, 2],
@@ -223,7 +221,7 @@ class TestDragon(unittest.TestCase):
     def test_many_wild_match_2(self):
         icon_set = np.array([[6, 6, 9, 6, 4],
                              [5, 1, 2, 2, 0],
-                             [10, 9, 9, 7, 7],
+                             [10, 8, 8, 7, 7],
                              [0, 5, 1, 1, 2]])
 
         payout = int(round(self.ruleset.calculate_payout(icon_set).payout * self.bet))
@@ -282,7 +280,7 @@ class TestDisco(unittest.TestCase):
                              [1, 1, 15, 5, 10]])
 
         payout = int(round(self.ruleset.calculate_payout(icon_set).payout * self.bet))
-        self.assertEqual(80, payout)
+        self.assertEqual(30, payout)
 
     def test_many_halos(self):
         icon_set = np.array([[13, 13, 1, 0, 13],
@@ -320,3 +318,13 @@ class TestDisco(unittest.TestCase):
 
         payout = self.ruleset.calculate_payout(icon_set)
         self.assertEqual(40, int(round(payout.payout * self.bet)))
+
+    def test_many_halo(self):
+        icon_set = np.array([[1, 9, 13, 9, 6],
+                             [9, 13, 13, 2, 9],
+                             [13, 13, 13, 9, 0],
+                             [13, 13, 13, 5, 7]])
+
+        payout = self.ruleset.calculate_payout(icon_set)
+        self.assertEqual(28800, int(round(payout.payout * self.bet)))
+

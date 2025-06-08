@@ -4,7 +4,7 @@ import time
 
 from classification import TrainedClassifier
 from fixture.predefined_extractors import extractor_map
-from fixture.predefined_slots import FRUIT, MUMMY, REELS
+from fixture.predefined_slots import BLAZINGHOT7, MUMMY, REELS
 
 if __name__ == '__main__':
     slots_game = REELS

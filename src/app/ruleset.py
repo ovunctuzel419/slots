@@ -187,6 +187,7 @@ class AllSameRule(Rule):
     def only_this_can_score(self) -> bool:
         return True
 
+
 @define(kw_only=True)
 class ScatterRule(Rule):
     num_matches: int
@@ -214,10 +215,16 @@ class Ruleset:
             if special_payout != PayoutEstimate.no_reward():
                 return special_payout
 
-        # For each line, calculate payout
-        for line in self.lines:
+        # For each line, calculate payout (only the best payout for each line counts)
+        for i, line in enumerate(self.lines):
+            best_payout_amount = 0
+            best_payout = PayoutEstimate.no_reward()
             for rule in [rule for rule in self.rules if rule.scores_every_line() and not rule.only_this_can_score()]:
-                total_payout += rule.calculate_payout(icon_set, line)
+                payout = rule.calculate_payout(icon_set, line)
+                if payout.payout > best_payout_amount:
+                    best_payout_amount = payout.payout
+                    best_payout = payout
+            total_payout += best_payout
 
         for rule in [rule for rule in self.rules if not rule.scores_every_line() and not rule.only_this_can_score()]:
             total_payout += rule.calculate_payout(icon_set, [])

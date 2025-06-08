@@ -1,15 +1,15 @@
-from fixture.predefined_slots import FRUIT, MUMMY, REELS, DISCO, DRAGON, MAJESTIC, BELLS, GANGSTER, BLAZINGFRUITS, \
+from fixture.predefined_slots import BLAZINGHOT7, MUMMY, REELS, DISCO, DRAGON, MAJESTIC, BELLS, GANGSTER, BLAZINGFRUITS, \
     MEGAREELS, REELSDELUXE, CRYSTALTREASURE, VULCAN, ICEDFRUITS
 
 predefined_classes = {}
-predefined_classes[FRUIT.name] = {0: 'cherry',
-                                  1: 'grape',
-                                  2: 'watermelon',
-                                  3: 'lemon',
-                                  4: 'orange',
-                                  5: 'plum',
-                                  6: 'star',
-                                  7: 'seven'}
+predefined_classes[BLAZINGHOT7.name] = {0: 'cherry',
+                                        1: 'grape',
+                                        2: 'watermelon',
+                                        3: 'lemon',
+                                        4: 'orange',
+                                        5: 'plum',
+                                        6: 'star',
+                                        7: 'seven'}
 
 predefined_classes[REELS.name] = {0: 'cherry',
                                   1: 'grape',

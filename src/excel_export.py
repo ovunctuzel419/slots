@@ -4,7 +4,7 @@ import time
 
 from classification import TrainedClassifier
 from fixture.predefined_extractors import extractor_map
-from fixture.predefined_slots import FRUIT, MUMMY, REELS, DRAGON, MAJESTIC, BELLS, GANGSTER, BLAZINGFRUITS, MEGAREELS, \
+from fixture.predefined_slots import BLAZINGHOT7, MUMMY, REELS, DRAGON, MAJESTIC, BELLS, GANGSTER, BLAZINGFRUITS, MEGAREELS, \
     DISCO, CRYSTALTREASURE, REELSDELUXE, VULCAN, ICEDFRUITS
 
 if __name__ == '__main__':

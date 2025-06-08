@@ -4,9 +4,11 @@ from typing import List, Tuple, Optional
 import numpy as np
 from attrs import field, define
 
+from app.csv_reader import CSVReader
 from app.localization import PositionEstimator, PositionEstimationResult, PositionEstimationStatus
 from app.payout import PayoutEstimator
 from app.ruleset import PayoutEstimate
+from app.strategy import OptimalStrategyFinder, Strategy
 from fixture.legend import get_class_icon_paths
 from fixture.predefined_slots import SlotsGame, available_games
 from utils.constants import MAX_REELS_IN_GAME
@@ -23,8 +25,13 @@ class AppContext:
     current_cursor_index: int = 0
     current_payout_page_index: int = 0
     current_bet: int = 50
+    csv_reader: CSVReader = CSVReader()
     payout_estimator: Optional[PayoutEstimator] = None
     _position_estimator: PositionEstimator = field(init=False)
+    _optimal_strategy_finder: Optional[OptimalStrategyFinder] = field(init=False)
+
+    def __attrs_post_init__(self):
+        self._position_estimator = PositionEstimator(slots_game=self.current_game, csv_reader=self.csv_reader)
 
     def get_available_games(self) -> List[SlotsGame]:
         return available_games
@@ -39,8 +46,9 @@ class AppContext:
 
         self.current_game = selected_game
         self.current_icon_set = np.zeros((selected_game.rows, selected_game.cols), dtype=int) - 1
-        self._position_estimator = PositionEstimator(slots_game=selected_game)
-        self.payout_estimator = PayoutEstimator.from_game(game=selected_game)
+        self._position_estimator = PositionEstimator(slots_game=selected_game, csv_reader=self.csv_reader)
+        self.payout_estimator = PayoutEstimator.from_game(game=selected_game, csv_reader=self.csv_reader)
+        self._optimal_strategy_finder = OptimalStrategyFinder(payout_estimator=self.payout_estimator)
         self.legend_icon_paths = get_class_icon_paths(selected_game.dataset_folder_path)
         self.legend_icon_names = [f"{os.path.basename(os.path.dirname(icon_path))}" for icon_path in self.legend_icon_paths]
         self.current_relative_reel_index = 0
@@ -94,6 +102,13 @@ class AppContext:
 
         estimate = self.payout_estimator.estimate(position_index, iterations=iterations, bet=self.current_bet)
         return estimate
+
+    def calculate_optimal_strategy(self, start_index: int, end_index: int) -> Strategy:
+        if self.payout_estimator is None:
+            print("ERROR: No payout estimator available.")
+            return Strategy(0, 0, 0)
+
+        return self._optimal_strategy_finder.calculate(start_index, end_index, self.current_bet)
 
     def check_bonus(self, position_index: int) -> bool:
         if self.payout_estimator is None:

@@ -1,18 +1,15 @@
 import copy
-import csv
-import os
 from typing import List, Optional, Dict, Tuple
-from concurrent.futures import ProcessPoolExecutor
-import pickle
 
 import attrs
 import numpy as np
-from tqdm import tqdm
 from attrs import define
 
+from app.csv_reader import CSVReader
 from app.ruleset import Ruleset, PayoutEstimate
 from fixture.predefined_slots import SlotsGame, BELLS
 from fixture.predefined_rulesets import predefined_rulesets
+from utils.common import csv_rows_to_icon_sets_batch_from_rows_cols
 from utils.custom_types import IconSet
 
 
@@ -31,6 +28,7 @@ class PayoutEstimator:
     rows: int
     cols: int
     use_disk_cache: bool = False
+    _csv_reader: CSVReader = CSVReader()
     _icon_sets: List[IconSet] = attrs.field(factory=list)
     _payout_cache: Dict[int, PayoutEstimate] = attrs.field(factory=dict)
     _lru_cache: Dict[Tuple[int, int], PayoutEstimate] = attrs.field(factory=dict)
@@ -38,7 +36,7 @@ class PayoutEstimator:
     _multiplier_2x_remaining: int = 0
 
     @classmethod
-    def from_game(cls, game: SlotsGame) -> Optional["PayoutEstimator"]:
+    def from_game(cls, game: SlotsGame, csv_reader: Optional[CSVReader] = None) -> Optional["PayoutEstimator"]:
         if game.name not in predefined_rulesets.keys():
             return None
         return cls(
@@ -46,26 +44,28 @@ class PayoutEstimator:
             ruleset=predefined_rulesets[game.name],
             rows=game.rows,
             cols=game.cols,
+            csv_reader=csv_reader or CSVReader(),
         )
 
     def __attrs_post_init__(self):
-        rows = list(csv.reader(open(self.extract_csv_path)))[1:]
-        self._icon_sets = np.array([[int(x) for x in row[1:]] for row in rows if row]).reshape(-1, self.cols, self.rows).transpose(0, 2, 1)
+        print("Payout cache: ", self._payout_cache)
+        rows = self._csv_reader.read_lines(self.extract_csv_path, skip_header=True)
+        self._icon_sets = csv_rows_to_icon_sets_batch_from_rows_cols(rows, r=self.rows, c=self.cols)
 
     def reset(self):
+        print("Payout cache cleared.")
         self._payout_cache = {}
 
     def estimate(self, position: int, iterations: int, bet: int) -> PayoutEstimate:
         start_index = position - 1
         end_index = start_index + iterations
 
-        total = self._payout_cache.get(start_index - 1, PayoutEstimate.no_reward())
+        total = copy.deepcopy(self._payout_cache[start_index - 1]) if start_index - 1 in self._payout_cache else PayoutEstimate.no_reward()
 
         for i in range(start_index, end_index):
             if i in self._payout_cache:
                 total = copy.deepcopy(self._payout_cache[i])
                 continue
-
             if i >= len(self._icon_sets):
                 break
 
@@ -108,7 +108,6 @@ class PayoutEstimator:
             mystery_multiplier_count=total.mystery_multiplier_count,
             next_round_column_replace_bonus=total.next_round_column_replace_bonus
         )
-
 
 
 if __name__ == '__main__':

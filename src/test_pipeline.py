@@ -5,7 +5,7 @@ import numpy as np
 
 from classification import TrainedClassifier
 from fixture.predefined_extractors import extractor_map
-from fixture.predefined_slots import DEMO, FRUIT, MUMMY, REELS, DRAGON, MAJESTIC, GANGSTER, BLAZINGFRUITS, MEGAREELS, \
+from fixture.predefined_slots import DEMO, BLAZINGHOT7, MUMMY, REELS, DRAGON, MAJESTIC, GANGSTER, BLAZINGFRUITS, MEGAREELS, \
     DISCO, CRYSTALTREASURE, REELSDELUXE, VULCAN, ICEDFRUITS
 from utils.visualization import visualize_icon_set
 

@@ -39,11 +39,13 @@ def create_green_text_theme():
 
 @contextmanager
 def loading_bar():
+    dpg.hide_item("OptimalStrategyParentBox")
     dpg.show_item("loading_bar")
     try:
         yield
     finally:
         dpg.hide_item("loading_bar")
+        dpg.show_item("OptimalStrategyParentBox")
 
 
 @define
@@ -112,8 +114,13 @@ class SlotPredictor:
 
         with loading_bar():
             position_estimate = self.context.get_position_estimate()
-        self.refresh_payouts_panel(position_estimate)
-        self.refresh_estimation_panel(position_estimate)
+        with loading_bar():
+            self.refresh_payouts_panel(position_estimate)
+            self.refresh_estimation_panel(position_estimate)
+            self.refresh_optimal_strategy(position_estimate)
+
+        if position_estimate.status != PositionEstimationStatus.CONFIDENT:
+            dpg.hide_item("OptimalStrategyParentBox")
 
     def refresh_legend(self):
         # Update legend
@@ -150,7 +157,7 @@ class SlotPredictor:
                         if page_index == 0:
                             prev_payout = current_payout
                         else:
-                            prev_payout = self.context.get_payout_estimate(payout_index - i - 1 - self.payout_page_size, iterations=self.payout_page_size)
+                            prev_payout = self.context.get_payout_estimate(payout_index - i - self.payout_page_size, iterations=self.payout_page_size)
                     else:
                         prev_payout = self.context.get_payout_estimate(payout_index - i, iterations=i)
 
@@ -181,6 +188,10 @@ class SlotPredictor:
         mystery_bonus_text = "" if mystery_mult_ct <= 0 else f" [MULT {mystery_mult_ct}x]"
         return f"{payout_index}: {payout}" + multiplier_text + free_games_text + mystery_bonus_text
 
+    def refresh_bet_options(self):
+        dpg.configure_item("bet_options", items=self.context.current_game.bets)
+        self.context.current_bet = self.context.current_game.bets[0]
+
     def refresh_hover_image(self, position_index: int, payout_row_index: int):
         icon_set = self.context._position_estimator._icon_sets[position_index - 1]
         for r in range(self.max_rows_in_grid):
@@ -206,8 +217,6 @@ class SlotPredictor:
         self._toggle_visibility("next_entry_button", position_estimate.status == PositionEstimationStatus.UNCERTAIN)
         self._toggle_visibility("undo_button", position_estimate.status == PositionEstimationStatus.UNKNOWN)
         dpg.set_value("confidence_text", f"Confidence: {confidence_text}")
-        # Update bet options, since some games have different bet options
-        dpg.configure_item("bet_options", items=self.context.current_game.bets)
 
     def refresh_grid(self):
         for row in range(self.max_rows_in_grid):
@@ -227,10 +236,38 @@ class SlotPredictor:
                 height = int(3 / self.context.current_icon_set.shape[0] * nominal_height)
                 dpg.configure_item(f"grid_cell_{row}_{col}", texture_tag=tex_tag, height=height)
 
+    def refresh_optimal_strategy(self, position_estimate: PositionEstimationResult):
+        if position_estimate.status != PositionEstimationStatus.CONFIDENT:
+            dpg.hide_item("OptimalStrategyBox")
+            return
+
+        dpg.show_item("OptimalStrategyBox")
+        strategy = self.context.calculate_optimal_strategy(
+            start_index=position_estimate.position + 1,
+            end_index=position_estimate.position + 1 + self.payout_page_size * (self.context.current_payout_page_index + 1))
+        dpg.set_value("strategy_max_loss_text", f"Maximum Loss: {strategy.max_loss}")
+        dpg.set_value("strategy_gains_text", f"Potential Gains: {strategy.gains}")
+        dpg.set_value("strategy_stop_play_text", f"Spin {strategy.position_to_stop - position_estimate.position} times."
+                                                            f"\nStop playing at: {strategy.position_to_stop}")
+
+        for r in range(self.max_rows_in_grid):
+            for c in range(self.max_cols_in_grid):
+                icon_set = self.context._position_estimator._icon_sets[strategy.position_to_stop - 1]
+                within_bounds = r < icon_set.shape[0] and c < icon_set.shape[1]
+                self._toggle_visibility(f"strategy_cell_{r}_{c}", within_bounds)
+                if within_bounds:
+                    icon_index = icon_set[r, c]
+                    texture_tag = self.texture_manager.get_texture_tag(self.context.legend_icon_paths[icon_index])
+                    dpg.show_item(f"strategy_cell_{r}_{c}")
+                    dpg.configure_item(f"strategy_cell_{r}_{c}", texture_tag=texture_tag)
+
+
     def on_load_game_click(self, game_name: str):
         print("Clicked load game", game_name)
         with loading_bar():
             self.context.on_click_load_game(game_name)
+
+        self.refresh_bet_options()
         self.set_context(self.context)
 
     def on_legend_button_click(self, index: int):
@@ -258,6 +295,18 @@ class SlotPredictor:
         self.context.on_click_prev_payout_page()
         self.set_context(self.context)
 
+    def on_next_payout_multipage_click(self):
+        print("Clicked next payout page")
+        for i in range(10):
+            self.context.on_click_next_payout_page()
+        self.set_context(self.context)
+
+    def on_prev_payout_multipage_click(self):
+        print("Clicked prev payout page")
+        for i in range(10):
+            self.context.on_click_prev_payout_page()
+        self.set_context(self.context)
+
     def on_bet_click(self, bet: int):
         print("Bet set to", bet)
         self.context.current_bet = int(bet)
@@ -270,13 +319,13 @@ class SlotPredictor:
 
     def on_debug_click(self):
         print("Clicked debug button")
-        # self.context.current_icon_set = np.array(([1, 3, 4, 3, 3],
-        #                                           [1, 3, 4, 3, 3],
-        #                                           [1, 0, 4, 3, 6]))
-        self.context.current_icon_set = np.array(([0, 5, 0, 11, 1],
-                                                  [7, 15, 12, 5, 2],
-                                                  [1, 0, 1, 0, 12],
-                                                  [15, 6, 8, 15, 1]))
+        # self.context.current_icon_set = np.array(([0, 5, 0, 11, 1],
+        #                                           [7, 15, 12, 5, 2],
+        #                                           [1, 0, 1, 0, 12],
+        #                                           [15, 6, 8, 15, 1]))
+        self.context.current_icon_set = np.array(([6, 7, 6, 0, 1],
+                                                  [5, 5, 5, 0, 1],
+                                                  [5, 5, 5, 5, 5]))
         self.set_context(self.context)
 
     def build_ui(self):
@@ -312,7 +361,7 @@ class SlotPredictor:
                                             for c in range(self.max_rows_in_grid):
                                                 dpg.add_image("grid_image", width=64, height=64, tag=f"grid_cell_{r}_{c}")
 
-                        dpg.add_spacer(height=10)
+                        dpg.add_spacer(height=5)
                         with dpg.group(horizontal=True):
                             with dpg.group(horizontal=False):
                                 dpg.add_spacer(height=7)
@@ -320,7 +369,7 @@ class SlotPredictor:
                                     dpg.add_button(label="Clear", width=100, height=30, callback=self.on_clear_all_click, tag="clear_all_button")
                                     dpg.add_button(label="Next", width=100, height=30, callback=self.on_next_entry_click, tag="next_entry_button")
                                     dpg.add_button(label="Undo", width=60, height=30, callback=self.on_undo_click, tag="undo_button")
-                                    # dpg.add_button(label="Debug", width=60, height=30, callback=self.on_debug_click, tag="debug_button")
+                                    # dpg.add_button(label="Debug", width=40, height=30, callback=self.on_debug_click, tag="debug_button")
                                     dpg.hide_item("next_entry_button")
                             dpg.add_spacer(width=10)
                             # Bet selection
@@ -334,9 +383,34 @@ class SlotPredictor:
                                     callback=lambda s, a: self.on_bet_click(int(a))
                                 )
 
-                        dpg.add_spacer(height=10)
+                        dpg.add_spacer(height=5)
                         dpg.add_text("Estimated position:", tag="estimated_text")
                         dpg.add_text("Confidence:", tag="confidence_text")
+                        dpg.add_spacer(height=13)
+
+                        # Optimal strategy window
+                        with dpg.child_window(width=390, height=176, no_scrollbar=True, no_scroll_with_mouse=True, tag="OptimalStrategyParentBox"):
+                            with dpg.group(tag="OptimalStrategyBox"):
+                                dpg.add_text("Optimal Strategy")
+                                dpg.add_spacer(height=3)
+                                with dpg.group(horizontal=True, tag="strategy_group"):
+                                    cell_size = 32
+                                    with dpg.drawlist(width=self.max_cols_in_grid * cell_size, height=self.max_rows_in_grid * cell_size) as drawlist:
+                                        for r in range(self.max_rows_in_grid):
+                                            for c in range(self.max_cols_in_grid):
+                                                x = c * cell_size
+                                                y = r * cell_size
+                                                dpg.draw_image("grid_image",
+                                                               (x, y),
+                                                               (x + cell_size, y + cell_size),
+                                                               parent=drawlist,
+                                                               tag=f"strategy_cell_{r}_{c}")
+                                    with dpg.group(horizontal=False):
+                                        dpg.add_text("Maximum Loss: 12345", tag="strategy_max_loss_text")
+                                        dpg.add_text("Potential Gains: 12345", tag="strategy_gains_text")
+                                        dpg.add_spacer(height=45)
+                                        dpg.add_text("Stop playing at: 12345", tag="strategy_stop_play_text")
+
                     # Loading indicator for long operations
                     with dpg.group(horizontal=False, tag="loading_bar"):
                         dpg.add_spacer(height=120)
@@ -350,7 +424,7 @@ class SlotPredictor:
                     dpg.hide_item("loading_bar")
 
                 # PAYOUTS PANEL
-                with dpg.child_window(width=200, autosize_y=True, tag="PayoutsPanel"):
+                with dpg.child_window(width=260, autosize_y=True, tag="PayoutsPanel"):
                     dpg.add_text("Payout:", tag="payout_text")
                     dpg.add_text("Future payouts:", tag="payout_future_text")
                     for i in range(self.payout_page_size):
@@ -369,14 +443,16 @@ class SlotPredictor:
 
                     dpg.add_spacer(height=10)
                     with dpg.group(horizontal=True):
-                        dpg.add_button(label="<<", width=40, height=25, callback=self.on_prev_payout_page_click)
-                        dpg.add_spacer(width=8)
+                        dpg.add_button(label="<<", width=30, height=25, callback=self.on_prev_payout_multipage_click)
+                        dpg.add_button(label="<", width=38, height=25, callback=self.on_prev_payout_page_click)
+                        dpg.add_spacer(width=2)
                         dpg.add_text("Page 001", tag=f"payout_page_text")
-                        dpg.add_spacer(width=8)
-                        dpg.add_button(label=">>", width=40, height=25, callback=self.on_next_payout_page_click)
+                        dpg.add_spacer(width=2)
+                        dpg.add_button(label=">", width=38, height=25, callback=self.on_next_payout_page_click)
+                        dpg.add_button(label=">>", width=30, height=25, callback=self.on_next_payout_multipage_click)
 
                 # RIGHT PANEL
-                with dpg.child_window(width=200, autosize_y=True, tag="RightPanel"):
+                with dpg.child_window(width=220, autosize_y=True, tag="RightPanel"):
                     dpg.add_text("Legend")
                     for i in range(20):
                         with dpg.group(horizontal=True):
@@ -399,7 +475,7 @@ class SlotPredictor:
 
     def run(self):
         dpg.create_context()
-        dpg.create_viewport(title="Slot UI", width=1000, height=620)
+        dpg.create_viewport(title="Slot UI", width=1080, height=620)
         dpg.setup_dearpygui()
 
         # Load default texture
