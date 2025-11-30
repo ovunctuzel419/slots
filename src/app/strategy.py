@@ -1,6 +1,7 @@
 from attrs import define
 
 from app.payout import PayoutEstimator
+from utils.constants import MAX_REELS_IN_GAME
 
 
 @define
@@ -20,10 +21,11 @@ class OptimalStrategyFinder:
         budget = bet
         budget_for_best_payout = bet
         for i in range(start_index, end_index):
-            estimate_so_far = self.payout_estimator.estimate(i, 1, bet)
+            index = i % MAX_REELS_IN_GAME
+            estimate_so_far = self.payout_estimator.estimate(index, 1, bet)
             if estimate_so_far.payout > best_payout:
                 best_payout = estimate_so_far.payout
-                position_to_stop = i
+                position_to_stop = index
                 budget_for_best_payout = budget
             if estimate_so_far.payout < budget:
                 budget = estimate_so_far.payout

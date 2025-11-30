@@ -1,3 +1,4 @@
+import hashlib
 from contextlib import contextmanager
 
 import attr
@@ -148,7 +149,8 @@ class SlotPredictor:
             for i in range(self.payout_page_size):
                 page_index = self.context.current_payout_page_index
                 payout_index = page_index * self.payout_page_size + position_estimate.position + i + 1
-                if payout_index < MAX_REELS_IN_GAME and position_estimate.status == PositionEstimationStatus.CONFIDENT:
+                payout_index = payout_index % MAX_REELS_IN_GAME
+                if position_estimate.status == PositionEstimationStatus.CONFIDENT:
                     dpg.show_item(f"payout_row_{i}")
                     payout = self.context.get_payout_estimate(payout_index - i, iterations=i + 1)
 
@@ -247,7 +249,7 @@ class SlotPredictor:
             end_index=position_estimate.position + 1 + self.payout_page_size * (self.context.current_payout_page_index + 1))
         dpg.set_value("strategy_max_loss_text", f"Maximum Loss: {strategy.max_loss}")
         dpg.set_value("strategy_gains_text", f"Potential Gains: {strategy.gains}")
-        dpg.set_value("strategy_stop_play_text", f"Spin {strategy.position_to_stop - position_estimate.position} times."
+        dpg.set_value("strategy_stop_play_text", f"Spin {(strategy.position_to_stop - position_estimate.position) % MAX_REELS_IN_GAME} times."
                                                             f"\nStop playing at: {strategy.position_to_stop}")
 
         for r in range(self.max_rows_in_grid):
@@ -299,13 +301,13 @@ class SlotPredictor:
         print("Clicked next payout page")
         for i in range(10):
             self.context.on_click_next_payout_page()
-        self.set_context(self.context)
+            self.set_context(self.context)
 
     def on_prev_payout_multipage_click(self):
         print("Clicked prev payout page")
         for i in range(10):
             self.context.on_click_prev_payout_page()
-        self.set_context(self.context)
+            self.set_context(self.context)
 
     def on_bet_click(self, bet: int):
         print("Bet set to", bet)
@@ -323,13 +325,32 @@ class SlotPredictor:
         #                                           [7, 15, 12, 5, 2],
         #                                           [1, 0, 1, 0, 12],
         #                                           [15, 6, 8, 15, 1]))
-        self.context.current_icon_set = np.array(([6, 7, 6, 0, 1],
-                                                  [5, 5, 5, 0, 1],
-                                                  [5, 5, 5, 5, 5]))
+        self.context.current_icon_set = np.array(([6, 0, 5, 11, 10],
+                                                  [10, 10, 6, 4, 0],
+                                                  [5, 3, 0, 6, 5],
+                                                  [2, 7, 9, 1, 4]))
+        # self.context.current_icon_set = np.array(([3, 10, 8, 5, 0],
+        #                                           [8, 1, 8, 2, 7],
+        #                                           [9, 4, 8, 10, 10]))
         self.set_context(self.context)
+
+    def check_password(self):
+        plain_text_password = dpg.get_value("PasswordInput")
+        password_hash = hashlib.sha256(plain_text_password.encode('utf-8')).hexdigest()
+        if password_hash == '5b4f855ec378f40395478790c5f49a26014a666bdad042ccf4d54836aa30475e':
+            dpg.hide_item("PasswordWindow")
+            dpg.show_item("MainWindow")
+        else:
+            dpg.set_value("PasswordStatus", "Wrong password!")
 
     def build_ui(self):
         black_box_theme = create_black_theme()
+
+        with dpg.window(tag="PasswordWindow", no_title_bar=True, no_close=True, no_move=True, width=300, height=105, no_collapse=True, no_resize=True, pos=[(dpg.get_viewport_width() - 300) / 2, (dpg.get_viewport_height() - 180) / 2]):
+            dpg.add_text("Enter password to unlock")
+            dpg.add_input_text(tag="PasswordInput", password=True)
+            dpg.add_button(label="Submit", callback=self.check_password)
+            dpg.add_text("", tag="PasswordStatus")
 
         with dpg.window(tag="MainWindow", label="Slot Predictor"):
             with dpg.group(horizontal=True):
@@ -466,6 +487,9 @@ class SlotPredictor:
                 dpg.hide_item("PayoutsPanel")
                 dpg.hide_item("RightPanel")
 
+                # Hide main window until password is entered
+                dpg.hide_item("MainWindow")
+
     @staticmethod
     def _toggle_visibility(tag: str, visible: bool):
         if visible:
@@ -475,7 +499,7 @@ class SlotPredictor:
 
     def run(self):
         dpg.create_context()
-        dpg.create_viewport(title="Slot UI", width=1080, height=620)
+        dpg.create_viewport(title="UI", width=1080, height=620)
         dpg.setup_dearpygui()
 
         # Load default texture
