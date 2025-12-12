@@ -18,7 +18,11 @@ predefined_classes[REELS.name] = {0: 'cherry',
                                   4: 'orange',
                                   5: 'plum',
                                   6: 'seven',
-                                  7: 'chest'}
+                                  7: 'chest',
+                                  8: 'Bonus1',
+                                  9: 'Bonus3',
+                                  10: 'Bonus7',}
+
 
 predefined_classes[MUMMY.name] = {0: '10',
                                   1: 'J',
@@ -29,7 +33,16 @@ predefined_classes[MUMMY.name] = {0: '10',
                                   6: 'SphinxBody',
                                   7: 'Tomb',
                                   8: 'Scarab',
-                                  9: 'Mummy'}
+                                  9: 'Mummy',
+                                  10: 'Golden10',
+                                  11: 'GoldenJ',
+                                  12: 'GoldenQ',
+                                  13: 'GoldenK',
+                                  14: 'GoldenA',
+                                  15: 'GoldenSphinxFace',
+                                  16: 'GoldenSphinxBody',
+                                  17: 'GoldenTomb',
+                                  18: 'GoldenScarab'}
 
 predefined_classes[DISCO.name] = {0: '9',
                                   1: '10',
@@ -91,7 +104,16 @@ predefined_classes[BELLS.name] = {0: 'Cherry',
                                   6: 'SingleBar',
                                   7: 'DoubleBar',
                                   8: 'TripleBar',
-                                  9: 'Bell'}
+                                  9: 'Bell',
+                                  10: 'GoldenCherry',
+                                  11: 'GoldenPlum',
+                                  12: 'GoldenLemon',
+                                  13: 'GoldenOrange',
+                                  14: 'GoldenWatermelon',
+                                  15: 'GoldenGrape',
+                                  16: 'GoldenSingleBar',
+                                  17: 'GoldenDoubleBar',
+                                  18: 'GoldenTripleBar'}
 
 predefined_classes[GANGSTER.name] = {0: 'Dynamite',
                                      1: 'Hat',
@@ -122,7 +144,10 @@ predefined_classes[REELSDELUXE.name] = {0: 'Cherry',
                                         4: 'Watermelon',
                                         5: 'Plum',
                                         6: 'Chest',
-                                        7: 'Seven'}
+                                        7: 'Seven',
+                                        8: 'Bonus1',
+                                        9: 'Bonus3',
+                                        10: 'Bonus7',}
 
 predefined_classes[CRYSTALTREASURE.name] = {0: 'Key',
                                             1: 'Amethyst',
@@ -131,7 +156,11 @@ predefined_classes[CRYSTALTREASURE.name] = {0: 'Key',
                                             4: 'Emerald',
                                             5: 'Crown',
                                             6: 'GoldBar',
-                                            7: 'Chest'}
+                                            7: 'Chest',
+                                            8: 'Bonus1',
+                                            9: 'Bonus3',
+                                            10: 'Bonus7',}
+
 
 predefined_classes[VULCAN.name] = {0: 'J',
                                    1: 'Q',

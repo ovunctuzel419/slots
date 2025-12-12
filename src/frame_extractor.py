@@ -17,6 +17,7 @@ class FrameExtractor:
     subframe_finder: SubframeFinder
     icon_extractor: IconExtractor
     change_detector: Union[ChangeDetector, ChangeDetectorAntiCorruption] = ChangeDetector()
+    start_frame: int = 0
     _last_frame: Optional[BGRImageArray] = None
 
     def extract_frames(self) -> Generator[BGRImageArray, None, None]:
@@ -27,8 +28,9 @@ class FrameExtractor:
         print("Processing", len(video_paths), "videos: ", str([str(p) + '\n' for p in video_paths]))
 
         for video_path in video_paths:
+            assert os.path.exists(video_path), f"Video path {video_path} does not exist"
             cap = cv2.VideoCapture(video_path)
-            # cap.set(cv2.CAP_PROP_POS_FRAMES, 400000)  # 223937
+            cap.set(cv2.CAP_PROP_POS_FRAMES, self.start_frame)
 
             while cap.isOpened():
                 frame = self._get_next_frame_with_change(cap)

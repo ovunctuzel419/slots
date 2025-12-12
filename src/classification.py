@@ -43,8 +43,6 @@ class TrainedClassifier:
         self._model = self._model.half()
 
     def classify(self, icon: BGRImageArray) -> Tuple[int, float]:
-        frame_index = int(self._icon_index_total / (rows * cols))
-        icon_index = self._icon_index_total % (rows * cols)
         self._icon_index_total += 1
 
         input_tensor = self._preprocess(icon).cuda().half()
@@ -63,7 +61,7 @@ class TrainedClassifier:
             os.makedirs('../ambiguous', exist_ok=True)
             os.makedirs(f'../ambiguous/{model_suffix}', exist_ok=True)
 
-            filename = f"../ambiguous/{model_suffix}/{frame_index}_{icon_index}_{self._class_index_to_name[pred_index]}.png"
+            filename = f"../ambiguous/{model_suffix}/{self._icon_index_total}_{self._class_index_to_name[pred_index]}.png"
             cv2.imwrite(filename, icon)
             print("WARNING: LOW CONFIDENCE")
             print(f"Confidence: {confidence:.4f}")

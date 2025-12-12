@@ -28,52 +28,74 @@ class FrameExtractorBuilder:
     def fruit() -> FrameExtractor:
         game = BLAZINGHOT7
         video_paths = game.get_video_filepaths()
-        subframe_finder = SubframeFinder(grid_crop=GridCrop(rows=3, cols=3, width=840, height=650, x_offset=85, y_offset=95, debug=False),
+        subframe_finder = SubframeFinder(grid_crop=GridCrop(rows=3, cols=3, width=480, height=340, x_offset=190, y_offset=50, debug=False),
                                          background_colors=[(0, 0, 0), (255, 0, 0)],
                                          rectifier=SubframeRectifier(debug=False), debug=False)
         extractor = FrameExtractor(video_paths=video_paths,
+                                   start_frame=90,
                                    subframe_finder=subframe_finder,
-                                   change_detector=ChangeDetector(threshold=7.5, debug=False),
-                                   icon_extractor=IconExtractor(grid_crop=GridCrop(rows=game.rows, cols=game.cols, width=141, height=179, x_offset=78, y_offset=95, debug=False)))
+                                   change_detector=ChangeDetectorAntiCorruption(segment_ys=[100, 455, 810],
+                                                                                segment_h=70,
+                                                                                icon_rows=game.rows,
+                                                                                threshold=7.5,
+                                                                                divide_each_segment=False,
+                                                                                downsample_factor=0.25,
+                                                                                debug=False),
+                                   icon_extractor=IconExtractor(grid_crop=GridCrop(rows=game.rows, cols=game.cols, width=83, height=93, x_offset=40, y_offset=52, debug=False)))
         return extractor
 
     @staticmethod
     def mummy() -> FrameExtractor:
         game = MUMMY
         video_paths = game.get_video_filepaths()
-        subframe_finder = SubframeFinder(grid_crop=GridCrop(rows=3, cols=3, width=820, height=650, x_offset=95, y_offset=95, debug=False),
+        subframe_finder = SubframeFinder(grid_crop=GridCrop(rows=3, cols=3, width=480, height=340, x_offset=190, y_offset=50, debug=False),
                                          background_colors=[(0, 0, 0), (255, 0, 0)],
                                          rectifier=SubframeRectifier(debug=False), debug=False)
         extractor = FrameExtractor(video_paths=video_paths,
+                                   start_frame=275,
                                    subframe_finder=subframe_finder,
-                                   change_detector=ChangeDetector(threshold=7.5, debug=False),
-                                   icon_extractor=IconExtractor(grid_crop=GridCrop(rows=game.rows, cols=game.cols, width=142, height=176, x_offset=60, y_offset=100, debug=False)))
+                                   change_detector=ChangeDetectorAntiCorruption(segment_ys=[100, 455, 810],
+                                                                                segment_h=70,
+                                                                                icon_rows=game.rows,
+                                                                                threshold=7.5,
+                                                                                divide_each_segment=False,
+                                                                                downsample_factor=0.25,
+                                                                                debug=False),
+                                   icon_extractor=IconExtractor(grid_crop=GridCrop(rows=game.rows, cols=game.cols, width=84, height=96, x_offset=35, y_offset=53, debug=False)))
         return extractor
 
     @staticmethod
     def reels() -> FrameExtractor:
         game = REELS
         video_paths = game.get_video_filepaths()
-        subframe_finder = SubframeFinder(grid_crop=GridCrop(rows=3, cols=3, width=890, height=650, x_offset=40, y_offset=80, debug=False),
+        subframe_finder = SubframeFinder(grid_crop=GridCrop(rows=3, cols=3, width=480, height=340, x_offset=190, y_offset=50, debug=False),
                                          background_colors=[(0, 0, 0), (255, 0, 0)],
                                          rectifier=SubframeRectifier(debug=False), debug=False)
         extractor = FrameExtractor(video_paths=video_paths,
+                                   start_frame=110,
                                    subframe_finder=subframe_finder,
-                                   change_detector=ChangeDetector(threshold=7.5, debug=False),
-                                   icon_extractor=IconExtractor(grid_crop=GridCrop(rows=game.rows, cols=game.cols, width=160, height=176, x_offset=54, y_offset=100, debug=False)))
+                                   change_detector=ChangeDetectorAntiCorruption(segment_ys=[100, 455, 810],
+                                                                                segment_h=70,
+                                                                                icon_rows=game.rows,
+                                                                                threshold=7.5,
+                                                                                divide_each_segment=False,
+                                                                                downsample_factor=0.25,
+                                                                                debug=False),
+                                   icon_extractor=IconExtractor(grid_crop=GridCrop(rows=game.rows, cols=game.cols, width=86, height=90, x_offset=35, y_offset=53, debug=False)))
         return extractor
 
     @staticmethod
     def disco() -> FrameExtractor:
         game = DISCO
         video_paths = game.get_video_filepaths()
-        subframe_finder = SubframeFinder(grid_crop=GridCrop(rows=3, cols=3, width=620, height=325, x_offset=40, y_offset=0, debug=False),
+        subframe_finder = SubframeFinder(grid_crop=GridCrop(rows=3, cols=3, width=480, height=340, x_offset=190, y_offset=50, debug=False),
                                          background_colors=[(0, 0, 0), (255, 0, 0)],
                                          rectifier=SubframeRectifier(debug=False), debug=False)
-        icon_extractor = IconExtractor(grid_crop=GridCrop(rows=game.rows, cols=game.cols, width=110, height=70, x_offset=40, y_offset=50, debug=False))
+        icon_extractor = IconExtractor(grid_crop=GridCrop(rows=game.rows, cols=game.cols, width=83, height=70, x_offset=40, y_offset=60, debug=False))
         extractor = FrameExtractor(video_paths=video_paths,
+                                   start_frame=125,
                                    subframe_finder=subframe_finder,
-                                   change_detector=ChangeDetectorAntiCorruption(segment_ys=[45, 385, 710],
+                                   change_detector=ChangeDetectorAntiCorruption(segment_ys=[110, 455, 810],
                                                                                 segment_h=52,
                                                                                 icon_rows=game.rows,
                                                                                 threshold=7.5,
@@ -87,13 +109,14 @@ class FrameExtractorBuilder:
     def dragon() -> FrameExtractor:
         game = DRAGON
         video_paths = game.get_video_filepaths()
-        subframe_finder = SubframeFinder(grid_crop=GridCrop(rows=3, cols=3, width=620, height=325, x_offset=40, y_offset=0, debug=False),
+        subframe_finder = SubframeFinder(grid_crop=GridCrop(rows=3, cols=3, width=480, height=340, x_offset=190, y_offset=50, debug=False),
                                          background_colors=[(0, 0, 0), (255, 0, 0)],
                                          rectifier=SubframeRectifier(debug=False), debug=False)
-        icon_extractor = IconExtractor(grid_crop=GridCrop(rows=game.rows, cols=game.cols, width=110, height=70, x_offset=40, y_offset=30, debug=False))
+        icon_extractor = IconExtractor(grid_crop=GridCrop(rows=game.rows, cols=game.cols, width=83, height=70, x_offset=40, y_offset=40, debug=False))
         extractor = FrameExtractor(video_paths=video_paths,
+                                   start_frame=80,
                                    subframe_finder=subframe_finder,
-                                   change_detector=ChangeDetectorAntiCorruption(segment_ys=[25, 365, 690],
+                                   change_detector=ChangeDetectorAntiCorruption(segment_ys=[90, 435, 790],
                                                                                 segment_h=52,
                                                                                 icon_rows=game.rows,
                                                                                 threshold=7.5,
@@ -101,25 +124,28 @@ class FrameExtractorBuilder:
                                                                                 downsample_factor=0.25,
                                                                                 debug=False),
                                    icon_extractor=icon_extractor)
+
         return extractor
 
     @staticmethod
     def majestic() -> FrameExtractor:
         game = MAJESTIC
         video_paths = game.get_video_filepaths()
-        subframe_finder = SubframeFinder(grid_crop=GridCrop(rows=3, cols=3, width=620, height=325, x_offset=40, y_offset=0, debug=False),
+        subframe_finder = SubframeFinder(grid_crop=GridCrop(rows=3, cols=3, width=480, height=340, x_offset=190, y_offset=50, debug=False),
                                          background_colors=[(0, 0, 0), (255, 0, 0)],
                                          rectifier=SubframeRectifier(debug=False), debug=False)
-        icon_extractor = IconExtractor(grid_crop=GridCrop(rows=game.rows, cols=game.cols, width=150, height=84, x_offset=100, y_offset=45, debug=False))
+        icon_extractor = IconExtractor(grid_crop=GridCrop(rows=game.rows, cols=game.cols, width=111, height=82, x_offset=90, y_offset=55, debug=False))
         extractor = FrameExtractor(video_paths=video_paths,
+                                   start_frame=0,
                                    subframe_finder=subframe_finder,
-                                   change_detector=ChangeDetectorAntiCorruption(segment_ys=[32, 370, 702],
-                                                                                segment_h=64,
+                                   change_detector=ChangeDetectorAntiCorruption(segment_ys=[100, 455, 810],
+                                                                                segment_h=57,
                                                                                 icon_rows=game.rows,
                                                                                 threshold=7.5,
                                                                                 divide_each_segment=False,
                                                                                 downsample_factor=0.25,
                                                                                 debug=False),
+
                                    icon_extractor=icon_extractor)
         return extractor
 
@@ -127,19 +153,21 @@ class FrameExtractorBuilder:
     def megareels() -> FrameExtractor:
         game = MEGAREELS
         video_paths = game.get_video_filepaths()
-        subframe_finder = SubframeFinder(grid_crop=GridCrop(rows=3, cols=3, width=620, height=325, x_offset=40, y_offset=0, debug=False),
+        subframe_finder = SubframeFinder(grid_crop=GridCrop(rows=3, cols=3, width=480, height=340, x_offset=190, y_offset=50, debug=False),
                                          background_colors=[(0, 0, 0), (255, 0, 0)],
                                          rectifier=SubframeRectifier(debug=False), debug=False)
-        icon_extractor = IconExtractor(grid_crop=GridCrop(rows=game.rows, cols=game.cols, width=145, height=81, x_offset=110, y_offset=70, debug=False))
+        icon_extractor = IconExtractor(grid_crop=GridCrop(rows=game.rows, cols=game.cols, width=111, height=82, x_offset=90, y_offset=70, debug=False))
         extractor = FrameExtractor(video_paths=video_paths,
+                                   start_frame=170,
                                    subframe_finder=subframe_finder,
-                                   change_detector=ChangeDetectorAntiCorruption(segment_ys=[48, 388, 720],
-                                                                                segment_h=64,
+                                   change_detector=ChangeDetectorAntiCorruption(segment_ys=[100, 455, 810],
+                                                                                segment_h=70,
                                                                                 icon_rows=game.rows,
                                                                                 threshold=7.5,
                                                                                 divide_each_segment=False,
                                                                                 downsample_factor=0.25,
                                                                                 debug=False),
+
                                    icon_extractor=icon_extractor)
         return extractor
 
@@ -147,39 +175,41 @@ class FrameExtractorBuilder:
     def bells() -> FrameExtractor:
         game = BELLS
         video_paths = game.get_video_filepaths()
-        subframe_finder = SubframeFinder(grid_crop=GridCrop(rows=3, cols=3, width=620, height=325, x_offset=40, y_offset=0, debug=False),
+        subframe_finder = SubframeFinder(grid_crop=GridCrop(rows=3, cols=3, width=480, height=340, x_offset=190, y_offset=50, debug=False),
                                          background_colors=[(0, 0, 0), (255, 0, 0)],
                                          rectifier=SubframeRectifier(debug=False), debug=False)
-        icon_extractor = IconExtractor(grid_crop=GridCrop(rows=game.rows, cols=game.cols, width=110, height=90, x_offset=40, y_offset=55, debug=False))
         extractor = FrameExtractor(video_paths=video_paths,
+                                   start_frame=255,
                                    subframe_finder=subframe_finder,
-                                   change_detector=ChangeDetectorAntiCorruption(segment_ys=[40, 378, 710],
-                                                                                segment_h=72,
+                                   change_detector=ChangeDetectorAntiCorruption(segment_ys=[100, 455, 810],
+                                                                                segment_h=70,
                                                                                 icon_rows=game.rows,
                                                                                 threshold=7.5,
                                                                                 divide_each_segment=False,
                                                                                 downsample_factor=0.25,
                                                                                 debug=False),
-                                   icon_extractor=icon_extractor)
+                                   icon_extractor=IconExtractor(grid_crop=GridCrop(rows=game.rows, cols=game.cols, width=84, height=96, x_offset=35, y_offset=53, debug=False)))
         return extractor
 
     @staticmethod
     def gangster() -> FrameExtractor:
         game = GANGSTER
         video_paths = game.get_video_filepaths()
-        subframe_finder = SubframeFinder(grid_crop=GridCrop(rows=3, cols=3, width=620, height=325, x_offset=40, y_offset=0, debug=False),
+        subframe_finder = SubframeFinder(grid_crop=GridCrop(rows=3, cols=3, width=480, height=340, x_offset=190, y_offset=50, debug=False),
                                          background_colors=[(0, 0, 0), (255, 0, 0)],
                                          rectifier=SubframeRectifier(debug=False), debug=False)
-        icon_extractor = IconExtractor(grid_crop=GridCrop(rows=game.rows, cols=game.cols, width=104, height=90, x_offset=60, y_offset=55, debug=False))
+        icon_extractor = IconExtractor(grid_crop=GridCrop(rows=game.rows, cols=game.cols, width=81, height=97, x_offset=48, y_offset=45, debug=False))
         extractor = FrameExtractor(video_paths=video_paths,
+                                   start_frame=0,
                                    subframe_finder=subframe_finder,
-                                   change_detector=ChangeDetectorAntiCorruption(segment_ys=[40, 378, 710],
-                                                                                segment_h=72,
-                                                                                icon_rows=3,
+                                   change_detector=ChangeDetectorAntiCorruption(segment_ys=[100, 455, 810],
+                                                                                segment_h=70,
+                                                                                icon_rows=game.rows,
                                                                                 threshold=7.5,
                                                                                 divide_each_segment=False,
                                                                                 downsample_factor=0.25,
                                                                                 debug=False),
+
                                    icon_extractor=icon_extractor)
         return extractor
 
@@ -187,59 +217,61 @@ class FrameExtractorBuilder:
     def reelsdeluxe() -> FrameExtractor:
         game = REELSDELUXE
         video_paths = game.get_video_filepaths()
-        subframe_finder = SubframeFinder(grid_crop=GridCrop(rows=3, cols=3, width=620, height=325, x_offset=40, y_offset=0, debug=False),
+        subframe_finder = SubframeFinder(grid_crop=GridCrop(rows=3, cols=3, width=480, height=340, x_offset=190, y_offset=50, debug=False),
                                          background_colors=[(0, 0, 0), (255, 0, 0)],
                                          rectifier=SubframeRectifier(debug=False), debug=False)
-        icon_extractor = IconExtractor(grid_crop=GridCrop(rows=game.rows, cols=game.cols, width=108, height=90, x_offset=50, y_offset=52, debug=False))
         extractor = FrameExtractor(video_paths=video_paths,
+                                   start_frame=282,
                                    subframe_finder=subframe_finder,
-                                   change_detector=ChangeDetectorAntiCorruption(segment_ys=[40, 378, 710],
-                                                                                segment_h=65,
-                                                                                icon_rows=3,
+                                   change_detector=ChangeDetectorAntiCorruption(segment_ys=[100, 455, 810],
+                                                                                segment_h=70,
+                                                                                icon_rows=game.rows,
                                                                                 threshold=7.5,
                                                                                 divide_each_segment=False,
                                                                                 downsample_factor=0.25,
                                                                                 debug=False),
-                                   icon_extractor=icon_extractor)
+                                   icon_extractor=IconExtractor(grid_crop=GridCrop(rows=game.rows, cols=game.cols, width=84, height=90, x_offset=35, y_offset=53, debug=False)))
         return extractor
 
     @staticmethod
     def crystaltreasure() -> FrameExtractor:
         game = CRYSTALTREASURE
         video_paths = game.get_video_filepaths()
-        subframe_finder = SubframeFinder(grid_crop=GridCrop(rows=3, cols=3, width=620, height=325, x_offset=40, y_offset=0, debug=False),
+        subframe_finder = SubframeFinder(grid_crop=GridCrop(rows=3, cols=3, width=480, height=340, x_offset=190, y_offset=50, debug=False),
                                          background_colors=[(0, 0, 0), (255, 0, 0)],
                                          rectifier=SubframeRectifier(debug=False), debug=False)
-        icon_extractor = IconExtractor(grid_crop=GridCrop(rows=game.rows, cols=game.cols, width=106, height=85, x_offset=55, y_offset=55, debug=False))
         extractor = FrameExtractor(video_paths=video_paths,
+                                   start_frame=1730,
                                    subframe_finder=subframe_finder,
-                                   change_detector=ChangeDetectorAntiCorruption(segment_ys=[40, 378, 710],
-                                                                                segment_h=65,
-                                                                                icon_rows=3,
+                                   change_detector=ChangeDetectorAntiCorruption(segment_ys=[100, 455, 810],
+                                                                                segment_h=70,
+                                                                                icon_rows=game.rows,
                                                                                 threshold=7.5,
                                                                                 divide_each_segment=False,
                                                                                 downsample_factor=0.25,
                                                                                 debug=False),
-                                   icon_extractor=icon_extractor)
+                                   icon_extractor=IconExtractor(grid_crop=GridCrop(rows=game.rows, cols=game.cols, width=84, height=90, x_offset=35, y_offset=53, debug=False)))
         return extractor
 
     @staticmethod
     def blazingfruits() -> FrameExtractor:
         game = BLAZINGFRUITS
         video_paths = game.get_video_filepaths()
-        subframe_finder = SubframeFinder(grid_crop=GridCrop(rows=3, cols=3, width=620, height=325, x_offset=40, y_offset=0, debug=False),
+        subframe_finder = SubframeFinder(grid_crop=GridCrop(rows=3, cols=3, width=480, height=340, x_offset=190, y_offset=50, debug=False),
                                          background_colors=[(0, 0, 0), (255, 0, 0)],
                                          rectifier=SubframeRectifier(debug=False), debug=False)
-        icon_extractor = IconExtractor(grid_crop=GridCrop(rows=game.rows, cols=game.cols, width=115, height=90, x_offset=30, y_offset=50, debug=False))
+        icon_extractor = IconExtractor(grid_crop=GridCrop(rows=game.rows, cols=game.cols, width=88, height=97, x_offset=30, y_offset=45, debug=False))
         extractor = FrameExtractor(video_paths=video_paths,
+                                   start_frame=220,
                                    subframe_finder=subframe_finder,
-                                   change_detector=ChangeDetectorAntiCorruption(segment_ys=[40, 378, 710],
-                                                                                segment_h=72,
+                                   change_detector=ChangeDetectorAntiCorruption(segment_ys=[100, 455, 810],
+                                                                                segment_h=70,
                                                                                 icon_rows=game.rows,
                                                                                 threshold=7.5,
                                                                                 divide_each_segment=False,
                                                                                 downsample_factor=0.25,
                                                                                 debug=False),
+
                                    icon_extractor=icon_extractor)
         return extractor
 
@@ -267,19 +299,21 @@ class FrameExtractorBuilder:
     def icedfruits() -> FrameExtractor:
         game = ICEDFRUITS
         video_paths = game.get_video_filepaths()
-        subframe_finder = SubframeFinder(grid_crop=GridCrop(rows=3, cols=3, width=620, height=325, x_offset=40, y_offset=0, debug=False),
+        subframe_finder = SubframeFinder(grid_crop=GridCrop(rows=3, cols=3, width=480, height=340, x_offset=190, y_offset=50, debug=False),
                                          background_colors=[(0, 0, 0), (255, 0, 0)],
                                          rectifier=SubframeRectifier(debug=False), debug=False)
-        icon_extractor = IconExtractor(grid_crop=GridCrop(rows=game.rows, cols=game.cols, width=102, height=90, x_offset=65, y_offset=52, debug=False))
+        icon_extractor = IconExtractor(grid_crop=GridCrop(rows=game.rows, cols=game.cols, width=83, height=97, x_offset=40, y_offset=45, debug=False))
         extractor = FrameExtractor(video_paths=video_paths,
+                                   start_frame=123,
                                    subframe_finder=subframe_finder,
-                                   change_detector=ChangeDetectorAntiCorruption(segment_ys=[40, 378, 710],
-                                                                                segment_h=72,
+                                   change_detector=ChangeDetectorAntiCorruption(segment_ys=[90, 445, 800],
+                                                                                segment_h=70,
                                                                                 icon_rows=game.rows,
                                                                                 threshold=7.5,
                                                                                 divide_each_segment=False,
                                                                                 downsample_factor=0.25,
                                                                                 debug=False),
+
                                    icon_extractor=icon_extractor)
         return extractor
 

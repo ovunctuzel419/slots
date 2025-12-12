@@ -1,7 +1,7 @@
-import numpy as np
-
-from app.ruleset import Ruleset, MatchLeftRule, ScatterRule, FixedConfigurationRule, AllSameRule, \
-    MatchAnyPositionWithWildBonusRule, MatchLeftOrRightWithWildColumnRule, ExistsInEveryReelRule
+from itertools import chain
+from app.ruleset import Ruleset, MatchLeftRule, ScatterRule, AllSameRule, \
+    MatchAnyPositionWithWildBonusRule, MatchLeftOrRightWithWildColumnRule, ExistsInEveryReelRule, \
+    MatchAnyWithPostScoringColumnReplaceRule
 from fixture.predefined_slots import BLAZINGFRUITS, MEGAREELS, BELLS, MUMMY, MAJESTIC, BLAZINGHOT7, CRYSTALTREASURE, \
     REELSDELUXE, ICEDFRUITS, REELS, GANGSTER, DRAGON, VULCAN, DISCO
 
@@ -131,7 +131,48 @@ predefined_rulesets[BELLS.name] = Ruleset(
         # Bell Scattergame - 10 free spins
         ScatterRule(symbol_index=9, payout=2, free_games_bonus=10, num_matches=3),
         ScatterRule(symbol_index=9, payout=20, free_games_bonus=10, num_matches=4),
-        ScatterRule(symbol_index=9, payout=200, free_games_bonus=10, num_matches=5)
+        ScatterRule(symbol_index=9, payout=200, free_games_bonus=10, num_matches=5),
+        # During scattergames, we have extra scoring with column replacement, just like MUMMY
+        # GoldenCherry
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=10, payout=1, num_matches=3, wild_symbol=-1),
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=10, payout=4, num_matches=4, wild_symbol=-1),
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=10, payout=16, num_matches=5, wild_symbol=-1),
+        # GoldenPlum
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=11, payout=1, num_matches=3, wild_symbol=-1),
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=11, payout=5, num_matches=4, wild_symbol=-1),
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=11, payout=24, num_matches=5, wild_symbol=-1),
+        # GoldenLemon
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=12, payout=1, num_matches=3, wild_symbol=-1),
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=12, payout=4, num_matches=4, wild_symbol=-1),
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=12, payout=16, num_matches=5, wild_symbol=-1),
+        # GoldenOrange
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=13, payout=1, num_matches=3, wild_symbol=-1),
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=13, payout=4, num_matches=4, wild_symbol=-1),
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=13, payout=16, num_matches=5, wild_symbol=-1),
+        # GoldenWatermelon
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=14, payout=1, num_matches=2, wild_symbol=-1),
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=14, payout=6, num_matches=3, wild_symbol=-1),
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=14, payout=20, num_matches=4, wild_symbol=-1),
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=14, payout=200, num_matches=5, wild_symbol=-1),
+        # GoldenGrape
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=15, payout=1, num_matches=3, wild_symbol=-1),
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=15, payout=5, num_matches=4, wild_symbol=-1),
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=15, payout=24, num_matches=5, wild_symbol=-1),
+        # GoldenSingleBar
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=16, payout=1, num_matches=2, wild_symbol=-1),
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=16, payout=6, num_matches=3, wild_symbol=-1),
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=16, payout=20, num_matches=4, wild_symbol=-1),
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=16, payout=200, num_matches=5, wild_symbol=-1),
+        # GoldenDoubleBar
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=17, payout=1, num_matches=2, wild_symbol=-1),
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=17, payout=6, num_matches=3, wild_symbol=-1),
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=17, payout=30, num_matches=4, wild_symbol=-1),
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=17, payout=300, num_matches=5, wild_symbol=-1),
+        # GoldenTripleBar
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=18, payout=2, num_matches=2, wild_symbol=-1),
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=18, payout=20, num_matches=3, wild_symbol=-1),
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=18, payout=200, num_matches=4, wild_symbol=-1),
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=18, payout=1000, num_matches=5, wild_symbol=-1),
     ]
 )
 
@@ -185,7 +226,48 @@ predefined_rulesets[MUMMY.name] = Ruleset(
         # Mummy Scattergame - 10 free spins
         ScatterRule(symbol_index=9, payout=2, free_games_bonus=10, num_matches=3),
         ScatterRule(symbol_index=9, payout=20, free_games_bonus=10, num_matches=4),
-        ScatterRule(symbol_index=9, payout=200, free_games_bonus=10, num_matches=5)
+        ScatterRule(symbol_index=9, payout=200, free_games_bonus=10, num_matches=5),
+        # Golden Symbols give column give double payout with column replace bonus
+        # Golden 10
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=10, payout=1, num_matches=3, wild_symbol=-1),
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=10, payout=4, num_matches=4, wild_symbol=-1),
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=10, payout=16, num_matches=5, wild_symbol=-1),
+        # Golden J
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=11, payout=1, num_matches=3, wild_symbol=-1),
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=11, payout=4, num_matches=4, wild_symbol=-1),
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=11, payout=16, num_matches=5, wild_symbol=-1),
+        # Golden Q
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=12, payout=1, num_matches=3, wild_symbol=-1),
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=12, payout=4, num_matches=4, wild_symbol=-1),
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=12, payout=16, num_matches=5, wild_symbol=-1),
+        # Golden K
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=13, payout=1, num_matches=3, wild_symbol=-1),
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=13, payout=5, num_matches=4, wild_symbol=-1),
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=13, payout=24, num_matches=5, wild_symbol=-1),
+        # Golden A
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=14, payout=1, num_matches=3, wild_symbol=-1),
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=14, payout=5, num_matches=4, wild_symbol=-1),
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=14, payout=24, num_matches=5, wild_symbol=-1),
+        # Golden SphinxFace
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=15, payout=1, num_matches=2, wild_symbol=-1),
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=15, payout=6, num_matches=3, wild_symbol=-1),
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=15, payout=30, num_matches=4, wild_symbol=-1),
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=15, payout=300, num_matches=5, wild_symbol=-1),
+        # Golden SphinxBody
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=16, payout=2, num_matches=2, wild_symbol=-1),
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=16, payout=20, num_matches=3, wild_symbol=-1),
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=16, payout=200, num_matches=4, wild_symbol=-1),
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=16, payout=1000, num_matches=5, wild_symbol=-1),
+        # Golden Tomb
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=17, payout=1, num_matches=2, wild_symbol=-1),
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=17, payout=6, num_matches=3, wild_symbol=-1),
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=17, payout=20, num_matches=4, wild_symbol=-1),
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=17, payout=200, num_matches=5, wild_symbol=-1),
+        # Golden Scarab
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=18, payout=1, num_matches=2, wild_symbol=-1),
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=18, payout=6, num_matches=3, wild_symbol=-1),
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=18, payout=20, num_matches=4, wild_symbol=-1),
+        MatchAnyWithPostScoringColumnReplaceRule(symbol_index=18, payout=200, num_matches=5, wild_symbol=-1),
     ]
 )
 
@@ -286,36 +368,41 @@ predefined_rulesets[CRYSTALTREASURE.name] = Ruleset(
            [2, 2, 2, 2, 2],
            [0, 1, 2, 1, 0],
            [2, 1, 0, 1, 2]],
-    rules=[
-        # Key
-        MatchAnyPositionWithWildBonusRule(symbol_index=0, payout=4, num_matches=3, wild_symbol=7),
-        MatchAnyPositionWithWildBonusRule(symbol_index=0, payout=20, num_matches=4, wild_symbol=7),
-        MatchAnyPositionWithWildBonusRule(symbol_index=0, payout=100, num_matches=5, wild_symbol=7),
-        # Amethyst
-        MatchAnyPositionWithWildBonusRule(symbol_index=1, payout=1, num_matches=3, wild_symbol=7),
-        MatchAnyPositionWithWildBonusRule(symbol_index=1, payout=5, num_matches=4, wild_symbol=7),
-        MatchAnyPositionWithWildBonusRule(symbol_index=1, payout=20, num_matches=5, wild_symbol=7),
-        # Ruby
-        MatchAnyPositionWithWildBonusRule(symbol_index=2, payout=2, num_matches=3, wild_symbol=7),
-        MatchAnyPositionWithWildBonusRule(symbol_index=2, payout=10, num_matches=4, wild_symbol=7),
-        MatchAnyPositionWithWildBonusRule(symbol_index=2, payout=40, num_matches=5, wild_symbol=7),
-        # Sapphire
-        MatchAnyPositionWithWildBonusRule(symbol_index=3, payout=2, num_matches=3, wild_symbol=7),
-        MatchAnyPositionWithWildBonusRule(symbol_index=3, payout=10, num_matches=4, wild_symbol=7),
-        MatchAnyPositionWithWildBonusRule(symbol_index=3, payout=40, num_matches=5, wild_symbol=7),
-        # Emerald
-        MatchAnyPositionWithWildBonusRule(symbol_index=4, payout=1, num_matches=3, wild_symbol=7),
-        MatchAnyPositionWithWildBonusRule(symbol_index=4, payout=5, num_matches=4, wild_symbol=7),
-        MatchAnyPositionWithWildBonusRule(symbol_index=4, payout=20, num_matches=5, wild_symbol=7),
-        # Crown
-        MatchAnyPositionWithWildBonusRule(symbol_index=5, payout=10, num_matches=3, wild_symbol=7),
-        MatchAnyPositionWithWildBonusRule(symbol_index=5, payout=100, num_matches=4, wild_symbol=7),
-        MatchAnyPositionWithWildBonusRule(symbol_index=5, payout=500, num_matches=5, wild_symbol=7),
-        # GoldBar
-        MatchAnyPositionWithWildBonusRule(symbol_index=6, payout=4, num_matches=3, wild_symbol=7),
-        MatchAnyPositionWithWildBonusRule(symbol_index=6, payout=20, num_matches=4, wild_symbol=7),
-        MatchAnyPositionWithWildBonusRule(symbol_index=6, payout=100, num_matches=5, wild_symbol=7),
-    ]
+    rules=list(chain.from_iterable(
+        [
+            # Key
+            MatchAnyPositionWithWildBonusRule(symbol_index=0, payout=4, num_matches=3, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=0, payout=20, num_matches=4, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=0, payout=100, num_matches=5, wild_symbol=wild, multiplier=mult),
+            # Amethyst
+            MatchAnyPositionWithWildBonusRule(symbol_index=1, payout=1, num_matches=3, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=1, payout=5, num_matches=4, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=1, payout=20, num_matches=5, wild_symbol=wild, multiplier=mult),
+            # Ruby
+            MatchAnyPositionWithWildBonusRule(symbol_index=2, payout=2, num_matches=3, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=2, payout=10, num_matches=4, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=2, payout=40, num_matches=5, wild_symbol=wild, multiplier=mult),
+            # Sapphire
+            MatchAnyPositionWithWildBonusRule(symbol_index=3, payout=2, num_matches=3, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=3, payout=10, num_matches=4, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=3, payout=40, num_matches=5, wild_symbol=wild, multiplier=mult),
+            # Emerald
+            MatchAnyPositionWithWildBonusRule(symbol_index=4, payout=1, num_matches=3, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=4, payout=5, num_matches=4, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=4, payout=20, num_matches=5, wild_symbol=wild, multiplier=mult),
+            # Crown
+            MatchAnyPositionWithWildBonusRule(symbol_index=5, payout=10, num_matches=3, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=5, payout=100, num_matches=4, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=5, payout=500, num_matches=5, wild_symbol=wild, multiplier=mult),
+            # GoldBar
+            MatchAnyPositionWithWildBonusRule(symbol_index=6, payout=4, num_matches=3, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=6, payout=20, num_matches=4, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=6, payout=100, num_matches=5, wild_symbol=wild, multiplier=mult),
+        ]
+        # Wild symbols: 6 (chest), 8 (chest 1x), 9 (chest 3x), 10 (chest 7x)
+        # Multipliers: 1, 1, 3, 7
+        for wild, mult in zip((7, 8, 9, 10), (1, 1, 3, 7))
+    ))
 )
 
 predefined_rulesets[REELS.name] = Ruleset(
@@ -324,36 +411,41 @@ predefined_rulesets[REELS.name] = Ruleset(
            [2, 2, 2, 2, 2],
            [0, 1, 2, 1, 0],
            [2, 1, 0, 1, 2]],
-    rules=[
-        # Cherry
-        MatchAnyPositionWithWildBonusRule(symbol_index=0, payout=1, num_matches=3, wild_symbol=7),
-        MatchAnyPositionWithWildBonusRule(symbol_index=0, payout=5, num_matches=4, wild_symbol=7),
-        MatchAnyPositionWithWildBonusRule(symbol_index=0, payout=20, num_matches=5, wild_symbol=7),
-        # Grape
-        MatchAnyPositionWithWildBonusRule(symbol_index=1, payout=4, num_matches=3, wild_symbol=7),
-        MatchAnyPositionWithWildBonusRule(symbol_index=1, payout=20, num_matches=4, wild_symbol=7),
-        MatchAnyPositionWithWildBonusRule(symbol_index=1, payout=100, num_matches=5, wild_symbol=7),
-        # Watermelon
-        MatchAnyPositionWithWildBonusRule(symbol_index=2, payout=4, num_matches=3, wild_symbol=7),
-        MatchAnyPositionWithWildBonusRule(symbol_index=2, payout=20, num_matches=4, wild_symbol=7),
-        MatchAnyPositionWithWildBonusRule(symbol_index=2, payout=100, num_matches=5, wild_symbol=7),
-        # Lemon
-        MatchAnyPositionWithWildBonusRule(symbol_index=3, payout=1, num_matches=3, wild_symbol=7),
-        MatchAnyPositionWithWildBonusRule(symbol_index=3, payout=5, num_matches=4, wild_symbol=7),
-        MatchAnyPositionWithWildBonusRule(symbol_index=3, payout=20, num_matches=5, wild_symbol=7),
-        # Orange
-        MatchAnyPositionWithWildBonusRule(symbol_index=4, payout=2, num_matches=3, wild_symbol=7),
-        MatchAnyPositionWithWildBonusRule(symbol_index=4, payout=10, num_matches=4, wild_symbol=7),
-        MatchAnyPositionWithWildBonusRule(symbol_index=4, payout=40, num_matches=5, wild_symbol=7),
-        # Plum
-        MatchAnyPositionWithWildBonusRule(symbol_index=5, payout=2, num_matches=3, wild_symbol=7),
-        MatchAnyPositionWithWildBonusRule(symbol_index=5, payout=10, num_matches=4, wild_symbol=7),
-        MatchAnyPositionWithWildBonusRule(symbol_index=5, payout=40, num_matches=5, wild_symbol=7),
-        # Seven
-        MatchAnyPositionWithWildBonusRule(symbol_index=6, payout=10, num_matches=3, wild_symbol=7),
-        MatchAnyPositionWithWildBonusRule(symbol_index=6, payout=100, num_matches=4, wild_symbol=7),
-        MatchAnyPositionWithWildBonusRule(symbol_index=6, payout=500, num_matches=5, wild_symbol=7),
-    ]
+    rules=list(chain.from_iterable(
+        [
+            # Cherry
+            MatchAnyPositionWithWildBonusRule(symbol_index=0, payout=1, num_matches=3, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=0, payout=5, num_matches=4, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=0, payout=20, num_matches=5, wild_symbol=wild, multiplier=mult),
+            # Grape
+            MatchAnyPositionWithWildBonusRule(symbol_index=1, payout=4, num_matches=3, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=1, payout=20, num_matches=4, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=1, payout=100, num_matches=5, wild_symbol=wild, multiplier=mult),
+            # Watermelon
+            MatchAnyPositionWithWildBonusRule(symbol_index=2, payout=4, num_matches=3, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=2, payout=20, num_matches=4, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=2, payout=100, num_matches=5, wild_symbol=wild, multiplier=mult),
+            # Lemon
+            MatchAnyPositionWithWildBonusRule(symbol_index=3, payout=1, num_matches=3, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=3, payout=5, num_matches=4, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=3, payout=20, num_matches=5, wild_symbol=wild, multiplier=mult),
+            # Orange
+            MatchAnyPositionWithWildBonusRule(symbol_index=4, payout=2, num_matches=3, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=4, payout=10, num_matches=4, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=4, payout=40, num_matches=5, wild_symbol=wild, multiplier=mult),
+            # Plum
+            MatchAnyPositionWithWildBonusRule(symbol_index=5, payout=2, num_matches=3, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=5, payout=10, num_matches=4, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=5, payout=40, num_matches=5, wild_symbol=wild, multiplier=mult),
+            # Seven
+            MatchAnyPositionWithWildBonusRule(symbol_index=6, payout=10, num_matches=3, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=6, payout=100, num_matches=4, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=6, payout=500, num_matches=5, wild_symbol=wild, multiplier=mult),
+        ]
+        # Wild symbols: 7 (chest), 8 (chest 1x), 9 (chest 3x), 10 (chest 7x)
+        # Multipliers: 1, 1, 3, 7
+        for wild, mult in zip((7, 8, 9, 10), (1, 1, 3, 7))
+        ))
 )
 
 predefined_rulesets[REELSDELUXE.name] = Ruleset(
@@ -362,36 +454,41 @@ predefined_rulesets[REELSDELUXE.name] = Ruleset(
            [2, 2, 2, 2, 2],
            [0, 1, 2, 1, 0],
            [2, 1, 0, 1, 2]],
-    rules=[
-        # Cherry
-        MatchAnyPositionWithWildBonusRule(symbol_index=0, payout=1, num_matches=3, wild_symbol=6),
-        MatchAnyPositionWithWildBonusRule(symbol_index=0, payout=5, num_matches=4, wild_symbol=6),
-        MatchAnyPositionWithWildBonusRule(symbol_index=0, payout=20, num_matches=5, wild_symbol=6),
-        # Lemon
-        MatchAnyPositionWithWildBonusRule(symbol_index=1, payout=1, num_matches=3, wild_symbol=6),
-        MatchAnyPositionWithWildBonusRule(symbol_index=1, payout=5, num_matches=4, wild_symbol=6),
-        MatchAnyPositionWithWildBonusRule(symbol_index=1, payout=20, num_matches=5, wild_symbol=6),
-        # Grape
-        MatchAnyPositionWithWildBonusRule(symbol_index=2, payout=4, num_matches=3, wild_symbol=6),
-        MatchAnyPositionWithWildBonusRule(symbol_index=2, payout=20, num_matches=4, wild_symbol=6),
-        MatchAnyPositionWithWildBonusRule(symbol_index=2, payout=100, num_matches=5, wild_symbol=6),
-        # Orange
-        MatchAnyPositionWithWildBonusRule(symbol_index=3, payout=2, num_matches=3, wild_symbol=6),
-        MatchAnyPositionWithWildBonusRule(symbol_index=3, payout=10, num_matches=4, wild_symbol=6),
-        MatchAnyPositionWithWildBonusRule(symbol_index=3, payout=40, num_matches=5, wild_symbol=6),
-        # Watermelon
-        MatchAnyPositionWithWildBonusRule(symbol_index=4, payout=4, num_matches=3, wild_symbol=6),
-        MatchAnyPositionWithWildBonusRule(symbol_index=4, payout=20, num_matches=4, wild_symbol=6),
-        MatchAnyPositionWithWildBonusRule(symbol_index=4, payout=100, num_matches=5, wild_symbol=6),
-        # Plum
-        MatchAnyPositionWithWildBonusRule(symbol_index=5, payout=2, num_matches=3, wild_symbol=6),
-        MatchAnyPositionWithWildBonusRule(symbol_index=5, payout=10, num_matches=4, wild_symbol=6),
-        MatchAnyPositionWithWildBonusRule(symbol_index=5, payout=40, num_matches=5, wild_symbol=6),
-        # Seven
-        MatchAnyPositionWithWildBonusRule(symbol_index=7, payout=10, num_matches=3, wild_symbol=6),
-        MatchAnyPositionWithWildBonusRule(symbol_index=7, payout=100, num_matches=4, wild_symbol=6),
-        MatchAnyPositionWithWildBonusRule(symbol_index=7, payout=500, num_matches=5, wild_symbol=6),
-    ]
+    rules=list(chain.from_iterable(
+        [
+            # Cherry
+            MatchAnyPositionWithWildBonusRule(symbol_index=0, payout=1,   num_matches=3, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=0, payout=5,   num_matches=4, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=0, payout=20,  num_matches=5, wild_symbol=wild, multiplier=mult),
+            # Lemon
+            MatchAnyPositionWithWildBonusRule(symbol_index=1, payout=1,   num_matches=3, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=1, payout=5,   num_matches=4, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=1, payout=20,  num_matches=5, wild_symbol=wild, multiplier=mult),
+            # Grape
+            MatchAnyPositionWithWildBonusRule(symbol_index=2, payout=4,   num_matches=3, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=2, payout=20,  num_matches=4, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=2, payout=100, num_matches=5, wild_symbol=wild, multiplier=mult),
+            # Orange
+            MatchAnyPositionWithWildBonusRule(symbol_index=3, payout=2,   num_matches=3, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=3, payout=10,  num_matches=4, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=3, payout=40,  num_matches=5, wild_symbol=wild, multiplier=mult),
+            # Watermelon
+            MatchAnyPositionWithWildBonusRule(symbol_index=4, payout=4,   num_matches=3, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=4, payout=20,  num_matches=4, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=4, payout=100, num_matches=5, wild_symbol=wild, multiplier=mult),
+            # Plum
+            MatchAnyPositionWithWildBonusRule(symbol_index=5, payout=2,   num_matches=3, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=5, payout=10,  num_matches=4, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=5, payout=40,  num_matches=5, wild_symbol=wild, multiplier=mult),
+            # Seven
+            MatchAnyPositionWithWildBonusRule(symbol_index=7, payout=10,  num_matches=3, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=7, payout=100, num_matches=4, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=7, payout=500, num_matches=5, wild_symbol=wild, multiplier=mult),
+        ]
+        # Wild symbols: 6 (chest), 8 (chest 1x), 9 (chest 3x), 10 (chest 7x)
+        # Multipliers: 1, 1, 3, 7
+        for wild, mult in zip((6, 8, 9, 10), (1, 1, 3, 7))
+    ))
 )
 
 predefined_rulesets[ICEDFRUITS.name] = Ruleset(

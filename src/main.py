@@ -337,7 +337,7 @@ class SlotPredictor:
     def check_password(self):
         plain_text_password = dpg.get_value("PasswordInput")
         password_hash = hashlib.sha256(plain_text_password.encode('utf-8')).hexdigest()
-        if password_hash == '5b4f855ec378f40395478790c5f49a26014a666bdad042ccf4d54836aa30475e':
+        if password_hash == 'fe9128409048f02b5e2f0ffc5387feb8fa4229ac7947e3128b2689d3e6a65469':
             dpg.hide_item("PasswordWindow")
             dpg.show_item("MainWindow")
         else:

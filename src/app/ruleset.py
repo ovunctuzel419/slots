@@ -46,9 +46,15 @@ class Rule(ABC):
         pass
 
     def scores_every_line(self) -> bool:
+        """ This rule scores on every line, instead of a global payout. """
         return True
 
     def only_this_can_score(self) -> bool:
+        """ Only this rule can score on this line. """
+        return False
+
+    def is_second_pass_rule(self) -> bool:
+        """ Certain rules trigger a second scoring pass. This is computed after the first normal scoring pass. """
         return False
 
     def get_payout(self):
@@ -103,6 +109,39 @@ class ExistsInEveryReelRule(Rule):
 
 
 @define(kw_only=True)
+class MatchAnyWithPostScoringColumnReplaceRule(Rule):
+    num_matches: int = -1
+    wild_symbol: int = -1
+
+    def is_second_pass_rule(self) -> bool:
+        return True
+
+    def calculate_payout(self, icon_set: IconSet, line: Line) -> PayoutEstimate:
+        # Identify columns with symbol, replace entire columns with the symbol_index
+        icon_set = icon_set.copy()
+        replace_cols = np.any(icon_set == self.symbol_index, axis=0)
+        icon_set[:, replace_cols] = self.symbol_index
+
+        symbols = icon_set[np.array(line), np.arange(len(line))]
+        for start in range(len(symbols) - self.num_matches + 1):
+            window = symbols[start:start + self.num_matches]
+            matches = [(s == self.symbol_index or s == self.wild_symbol) for s in window]
+
+            if not all(matches):
+                continue
+
+            # Check if it's *exactly* num_matches (no continuation before/after)
+            before_ok = (start == 0 or symbols[start - 1] not in (self.symbol_index, self.wild_symbol))
+            after_ok = (start + self.num_matches == len(symbols) or symbols[start + self.num_matches] not in (self.symbol_index, self.wild_symbol))
+
+            if before_ok and after_ok:
+                print(f"Matched rule {self}, iconset: {icon_set}, line: {line}, payout: {self.get_payout()}")
+                return self.get_payout()
+
+        return PayoutEstimate.no_reward()
+
+
+@define(kw_only=True)
 class MatchLeftOrRightWithWildColumnRule(Rule):
     num_matches: int = -1
     wild_symbol: int = -1
@@ -140,6 +179,7 @@ class MatchLeftOrRightWithWildColumnRule(Rule):
 class MatchAnyPositionWithWildBonusRule(Rule):
     num_matches: int = -1
     wild_symbol: int = -1
+    multiplier: int = 1
 
     def calculate_payout(self, icon_set: IconSet, line: Line) -> PayoutEstimate:
         symbols = icon_set[np.array(line), np.arange(len(line))]
@@ -157,7 +197,9 @@ class MatchAnyPositionWithWildBonusRule(Rule):
             if before_ok and after_ok:
                 used_wild = any(s == self.wild_symbol for s in window)
                 payout = self.get_payout()
-                payout.mystery_multiplier_count = 1 if used_wild else 0
+                if used_wild:
+                    payout.payout *= self.multiplier
+                # payout.mystery_multiplier_count = 1 if used_wild else 0
                 print(f"Matched rule {self}, symbols: {symbols}, used wild: {used_wild}, payout: {payout}")
                 return payout
 
@@ -216,15 +258,25 @@ class Ruleset:
                 return special_payout
 
         # For each line, calculate payout (only the best payout for each line counts)
-        for i, line in enumerate(self.lines):
-            best_payout_amount = 0
-            best_payout = PayoutEstimate.no_reward()
-            for rule in [rule for rule in self.rules if rule.scores_every_line() and not rule.only_this_can_score()]:
-                payout = rule.calculate_payout(icon_set, line)
-                if payout.payout > best_payout_amount:
-                    best_payout_amount = payout.payout
-                    best_payout = payout
-            total_payout += best_payout
+        # We do two passes, since some rules apply after a first pass is computed
+        for is_first_pass in [True, False]:
+            for i, line in enumerate(self.lines):
+                best_payout_amount = 0
+                best_payout = PayoutEstimate.no_reward()
+                for rule in self.rules:
+                    if not rule.scores_every_line():
+                        continue
+                    if rule.only_this_can_score():
+                        continue
+                    if is_first_pass and rule.is_second_pass_rule():
+                        continue
+                    if not is_first_pass and not rule.is_second_pass_rule():
+                        continue
+                    payout = rule.calculate_payout(icon_set, line)
+                    if payout.payout > best_payout_amount:
+                        best_payout_amount = payout.payout
+                        best_payout = payout
+                total_payout += best_payout
 
         for rule in [rule for rule in self.rules if not rule.scores_every_line() and not rule.only_this_can_score()]:
             total_payout += rule.calculate_payout(icon_set, [])

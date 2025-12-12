@@ -2,10 +2,9 @@ import unittest
 
 import numpy as np
 
-from app.payout import PayoutEstimator
 from fixture.predefined_rulesets import predefined_rulesets
-from fixture.predefined_slots import MEGAREELS, MUMMY, MAJESTIC, BLAZINGHOT7, CRYSTALTREASURE, ICEDFRUITS, GANGSTER, DRAGON, \
-    VULCAN, DISCO
+from fixture.predefined_slots import MEGAREELS, MUMMY, MAJESTIC, BLAZINGHOT7, CRYSTALTREASURE, ICEDFRUITS, GANGSTER, \
+    DRAGON, VULCAN, DISCO, BELLS
 
 
 class TestMegaReels(unittest.TestCase):
@@ -125,15 +124,13 @@ class TestCrystalTreasure(unittest.TestCase):
         payout = self.ruleset.calculate_payout(icon_set).payout * self.bet
         self.assertEqual(2400, payout)
 
-    def test_mystery_multiplier(self):
-        icon_set = np.array([[1, 6, 4, 5, 3],
-                             [6, 5, 7, 5, 1],
-                             [6, 5, 7, 5, 1]])
+    def test_3x_multiplier(self):
+        icon_set = np.array([[1, 6, 4, 9, 3],
+                             [6, 5, 1, 9, 1],
+                             [6, 5, 7, 9, 1]])
 
         payout = self.ruleset.calculate_payout(icon_set).payout * self.bet
-        mystery_multiplier_count = self.ruleset.calculate_payout(icon_set).mystery_multiplier_count
-        self.assertEqual(3000, payout)
-        self.assertEqual(mystery_multiplier_count, 3)
+        self.assertEqual(300, payout)  # 100 x 3 since 9 is 3x multiplier
 
 
 class TestIcedFruits(unittest.TestCase):
@@ -266,6 +263,20 @@ class TestVulcan(unittest.TestCase):
         payout = self.ruleset.calculate_payout(icon_set)
         self.assertEqual(0, int(round(payout.payout * self.bet)))
         self.assertEqual(10, payout.free_games)
+
+
+class TestBells(unittest.TestCase):
+    def setUp(self):
+        self.ruleset = predefined_rulesets[BELLS.name]
+        self.bet = 100
+
+    def test_expanding_columns(self):
+        icon_set = np.array([[1, 0, 15, 2, 7],
+                             [6, 6, 6, 15, 3],
+                             [4, 3, 2, 1, 15]])
+
+        payout = int(round(self.ruleset.calculate_payout(icon_set).payout * self.bet))
+        self.assertEqual(1100, payout)  # 600 (base) + 500 (expanding)
 
 
 class TestDisco(unittest.TestCase):

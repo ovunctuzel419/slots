@@ -4,7 +4,9 @@ import sys
 from operator import index
 
 import cv2
+import numpy as np
 
+from classification import TrainedClassifier
 from fixture.predefined_classes import predefined_classes
 from fixture.predefined_extractors import extractor_map
 from fixture.predefined_slots import DEMO, MUMMY, REELS, DRAGON, MAJESTIC, BELLS, GANGSTER, BLAZINGFRUITS, MEGAREELS, \
@@ -48,28 +50,41 @@ key_to_index = {ord('0'): 0,
 index_to_key = {value: key for key, value in key_to_index.items()}
 
 if __name__ == '__main__':
-    video_path = ICEDFRUITS.video_folder_path
-    extractor = extractor_map[ICEDFRUITS.name]
+    game = REELS
+    video_path = game.video_folder_path
+    extractor = extractor_map[game.name]
+    # Optionally defined a classifier for active learning
+    classifier = TrainedClassifier(game.model_path, rows=extractor.icon_extractor.grid_crop.rows, cols=extractor.icon_extractor.grid_crop.cols)
 
-    classes = predefined_classes[ICEDFRUITS.name]
+    classes = predefined_classes[game.name]
     print(f'Classes:\n' + str.join('\n', [f'{chr(index_to_key[index])}: {class_name}' for index, class_name in classes.items()]))
-    sample_count_per_class = 10
+    sample_count_per_class = 20
     samples_per_class = {key: 0 for key in classes}
     for i, subframe in enumerate(extractor.extract_frames()):
+        print(i)
         for j, icon in enumerate(extractor.icon_extractor.extract_icons(subframe)):
+            # Active learning (Optional)
+            if classifier:
+                prediction, confidence = classifier.classify(icon)
+                if confidence > 0.8:
+                    # print(f"Already confident that this is a {classes[prediction]} ({confidence}). Skipping.")
+                    continue
+
             # Sample difficult examples more
-            difficult_frame_indices = 3, 5
-            difficult_icon_indices = 5, 9, 10, 14, 15, 19
-            is_difficult_frame = any([(i % 9) in difficult_frame_indices])
-            is_difficult_icon = j in difficult_icon_indices
-            if not (is_difficult_icon and is_difficult_frame) and random.random() < 0.9:
-                continue
+            # difficult_frame_indices = 3, 5
+            # difficult_icon_indices = 5, 9, 10, 14, 15, 19
+            # is_difficult_frame = any([(i % 9) in difficult_frame_indices])
+            # is_difficult_icon = j in difficult_icon_indices
+            # if not (is_difficult_icon and is_difficult_frame) and random.random() < 0.9:
+            #     continue
 
             print(f'Frame {i}, Icon {j}')
 
             cv2.imshow('icon', icon)
             key = cv2.waitKey()
             print(f'Pressed {key}')
+            cv2.imshow('icon', np.zeros(icon.shape, dtype=np.uint8))  # Clear canvas
+            cv2.waitKey(1)
 
             if key == 27:
                 break
