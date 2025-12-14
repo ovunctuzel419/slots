@@ -136,7 +136,7 @@ ICEDFRUITS = SlotsGame(name='ICEDFRUITS',
 
 
 available_games = [
-    # MUMMY,
+    MUMMY,
     BELLS,
     MAJESTIC,
     BLAZINGFRUITS,
