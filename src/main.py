@@ -7,6 +7,7 @@ import numpy as np
 from attrs import define
 from typing import Dict
 
+from app.auth import verify_otp
 from app.context import AppContext
 from app.localization import PositionEstimationStatus, PositionEstimationResult
 from app.ruleset import PayoutEstimate
@@ -343,13 +344,24 @@ class SlotPredictor:
         else:
             dpg.set_value("PasswordStatus", "Wrong password!")
 
+    def check_double_otp(self):
+        otp1 = dpg.get_value("OTP1")
+        otp2 = dpg.get_value("OTP2")
+        if verify_otp(otp1, otp2, known_secrets_json_path=resource_path("auth_codes/secrets.json")):
+            dpg.hide_item("OTP1")
+            dpg.hide_item("PasswordWindow")
+            dpg.show_item("MainWindow")
+        else:
+            dpg.set_value("PasswordStatus", "Wrong password combination, try again.")
+
     def build_ui(self):
         black_box_theme = create_black_theme()
 
-        with dpg.window(tag="PasswordWindow", no_title_bar=True, no_close=True, no_move=True, width=300, height=105, no_collapse=True, no_resize=True, pos=[(dpg.get_viewport_width() - 300) / 2, (dpg.get_viewport_height() - 180) / 2]):
-            dpg.add_text("Enter password to unlock")
-            dpg.add_input_text(tag="PasswordInput", password=True)
-            dpg.add_button(label="Submit", callback=self.check_password)
+        with dpg.window(tag="PasswordWindow", no_title_bar=True, no_close=True, no_move=True, width=300, height=130, no_collapse=True, no_resize=True, pos=[(dpg.get_viewport_width() - 300) / 2, (dpg.get_viewport_height() - 180) / 2]):
+            dpg.add_text("Enter one-time passwords to unlock")
+            dpg.add_input_text(label="User 1", tag="OTP1", password=True)
+            dpg.add_input_text(label="User 2", tag="OTP2", password=True)
+            dpg.add_button(label="Submit", callback=self.check_double_otp)
             dpg.add_text("", tag="PasswordStatus")
 
         with dpg.window(tag="MainWindow", label="Slot Predictor"):
