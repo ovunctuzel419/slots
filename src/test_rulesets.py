@@ -58,6 +58,14 @@ class TestMummy(unittest.TestCase):
         payout = self.ruleset.calculate_payout(icon_set).payout * self.bet
         self.assertEqual(500, payout)
 
+    def test_postgame_column_replace_reward(self):
+        icon_set = np.array([[7, 6, 1, 18, 1],
+                             [1, 1, 5, 5, 18],
+                             [18, 18, 0, 1, 2]])
+
+        payout = self.ruleset.calculate_payout(icon_set).payout * self.bet
+        self.assertEqual(5000, payout)
+
 
 class TestMajestic(unittest.TestCase):
     def setUp(self):

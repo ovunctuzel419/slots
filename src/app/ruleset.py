@@ -112,6 +112,7 @@ class ExistsInEveryReelRule(Rule):
 class MatchAnyWithPostScoringColumnReplaceRule(Rule):
     num_matches: int = -1
     wild_symbol: int = -1
+    scores_anywhere: bool = True  # If true, e.g. X O X X O scores 3 Xs
 
     def is_second_pass_rule(self) -> bool:
         return True
@@ -123,20 +124,24 @@ class MatchAnyWithPostScoringColumnReplaceRule(Rule):
         icon_set[:, replace_cols] = self.symbol_index
 
         symbols = icon_set[np.array(line), np.arange(len(line))]
-        for start in range(len(symbols) - self.num_matches + 1):
-            window = symbols[start:start + self.num_matches]
-            matches = [(s == self.symbol_index or s == self.wild_symbol) for s in window]
-
-            if not all(matches):
-                continue
-
-            # Check if it's *exactly* num_matches (no continuation before/after)
-            before_ok = (start == 0 or symbols[start - 1] not in (self.symbol_index, self.wild_symbol))
-            after_ok = (start + self.num_matches == len(symbols) or symbols[start + self.num_matches] not in (self.symbol_index, self.wild_symbol))
-
-            if before_ok and after_ok:
-                print(f"Matched rule {self}, iconset: {icon_set}, line: {line}, payout: {self.get_payout()}")
+        if self.scores_anywhere:
+            if sum(symbols == self.symbol_index) == self.num_matches:
                 return self.get_payout()
+        else:
+            for start in range(len(symbols) - self.num_matches + 1):
+                window = symbols[start:start + self.num_matches]
+                matches = [(s == self.symbol_index or s == self.wild_symbol) for s in window]
+
+                if not all(matches):
+                    continue
+
+                # Check if it's *exactly* num_matches (no continuation before/after)
+                before_ok = (start == 0 or symbols[start - 1] not in (self.symbol_index, self.wild_symbol))
+                after_ok = (start + self.num_matches == len(symbols) or symbols[start + self.num_matches] not in (self.symbol_index, self.wild_symbol))
+
+                if before_ok and after_ok:
+                    print(f"Matched rule {self}, iconset: {icon_set}, line: {line}, payout: {self.get_payout()}")
+                    return self.get_payout()
 
         return PayoutEstimate.no_reward()
 
