@@ -60,7 +60,7 @@ if __name__ == '__main__':
     print(f'Classes:\n' + str.join('\n', [f'{chr(index_to_key[index])}: {class_name}' for index, class_name in classes.items()]))
     sample_count_per_class = 20
     samples_per_class = {key: 0 for key in classes}
-    for i, subframe in enumerate(extractor.extract_frames()):
+    for i, (subframe, index) in enumerate(extractor.extract_frames()):
         print(i)
         for j, icon in enumerate(extractor.icon_extractor.extract_icons(subframe)):
             # Active learning (Optional)

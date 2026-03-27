@@ -204,7 +204,8 @@ class SlotPredictor:
                     continue
                 icon_index = icon_set[r, c]
                 # print(f"ICON SET FOR {position_index}: {icon_set} - (This is payout row {payout_row_index})")
-                texture_tag = self.texture_manager.get_texture_tag(self.context.legend_icon_paths[icon_index])
+                icon_path = self.placeholder_icon_path if icon_index == -1 else self.context.legend_icon_paths[icon_index]
+                texture_tag = self.texture_manager.get_texture_tag(icon_path)
                 dpg.show_item(f"tooltip_{payout_row_index}_{r}_{c}")
                 dpg.configure_item(f"tooltip_{payout_row_index}_{r}_{c}", texture_tag=texture_tag)
 

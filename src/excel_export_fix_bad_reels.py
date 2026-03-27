@@ -20,7 +20,7 @@ if __name__ == '__main__':
         header = ['frame_index'] + [f'icon_c{c}_r{r}' for c in range(num_cols) for r in range(num_rows)]
         writer.writerow(header)
 
-        for i, frame in enumerate(extractor.extract_frames()):
+        for i, (frame, index) in enumerate(extractor.extract_frames()):
             frame_index = i + 1 + 411570
             print("Processing frame", frame_index)
             icons = extractor.icon_extractor.extract_icons(frame)

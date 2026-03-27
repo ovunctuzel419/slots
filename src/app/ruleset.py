@@ -254,6 +254,9 @@ class Ruleset:
     rules: List[Rule]
 
     def calculate_payout(self, icon_set: IconSet) -> PayoutEstimate:
+        if np.all(icon_set == -1):
+            return PayoutEstimate.no_reward()
+
         total_payout = PayoutEstimate.no_reward()
 
         # Check special rules

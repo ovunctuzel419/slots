@@ -1,11 +1,12 @@
 import os
-from typing import Optional, Generator, Union, List
+from typing import Optional, Generator, Union, List, Tuple
 
 import cv2
 from attr import define
 
 from change_detection import ChangeDetector, ChangeDetectorAntiCorruption
 from icon_extractor import IconExtractor
+from template_ocr import read_frame_index
 from utils.custom_types import BGRImageArray
 from subframe_finder import SubframeFinder
 
@@ -18,9 +19,10 @@ class FrameExtractor:
     icon_extractor: IconExtractor
     change_detector: Union[ChangeDetector, ChangeDetectorAntiCorruption] = ChangeDetector()
     start_frame: int = 0
+    ocr_digit_height: int = 64
     _last_frame: Optional[BGRImageArray] = None
 
-    def extract_frames(self) -> Generator[BGRImageArray, None, None]:
+    def extract_frames(self) -> Generator[Tuple[BGRImageArray, int], None, None]:
         video_paths = self.video_paths if isinstance(self.video_paths, list) else [self.video_paths]
         video_paths = sorted(video_paths)
         for path in video_paths:
@@ -37,8 +39,13 @@ class FrameExtractor:
                 if frame is None:
                     break
                 subframes = self.subframe_finder.find_subframes(frame, video_filename=os.path.basename(video_path))
-                for subframe in subframes:
-                    yield subframe
+
+                # Optionally, extract the frame index from the video
+                frame_index_crops = self.subframe_finder.grid_crop.crop(frame)
+                indices = [read_frame_index(crop[-self.ocr_digit_height:, :]) for crop in frame_index_crops]
+
+                for subframe, index in zip(subframes, indices):
+                    yield subframe, index
             cap.release()
 
     def extract_icons(self) -> Generator[BGRImageArray, None, None]:

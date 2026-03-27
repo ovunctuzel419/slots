@@ -19,7 +19,7 @@ if __name__ == "__main__":
     cols = extractor.icon_extractor.grid_crop.cols
 
     classifier = TrainedClassifier(slots_game.model_path, rows=rows, cols=cols, debug=True)
-    for i, frame in enumerate(extractor.extract_frames()):
+    for i, (frame, index) in enumerate(extractor.extract_frames()):
         frame_index = i + 1
 
         icons = extractor.icon_extractor.extract_icons(frame)
