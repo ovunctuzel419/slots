@@ -24,6 +24,8 @@ class TrainedClassifier:
     _model: torch.nn.Module = attr.field(init=False)
     _class_index_to_name: Dict[int, str] = attr.field(init=False)
     _icon_index_total: int = 0
+    _imagenet_mean: torch.Tensor = torch.tensor([0.485, 0.456, 0.406], device="cuda").view(1, 3, 1, 1) * 255
+    _imagenet_std: torch.Tensor = torch.tensor([0.229, 0.224, 0.225], device="cuda").view(1, 3, 1, 1) * 255
 
 
     def __attrs_post_init__(self):
@@ -68,7 +70,14 @@ class TrainedClassifier:
         return pred_index, confidence
 
     def classify_batch(self, icon_list: List[BGRImageArray]) -> List[Tuple[int, float]]:
-        input_tensor = torch.stack([self._preprocess(icon)[0] for icon in icon_list]).cuda().half()
+        # GPU friendly preprocessing
+        resized = [cv2.resize(cv2.cvtColor(icon, cv2.COLOR_BGR2RGB), (224, 224)) for icon in icon_list]
+        batch = np.stack(resized)  # (N, H, W, C)
+        tensor = torch.from_numpy(batch).cuda().float()  # (N, H, W, C)
+        tensor = tensor.permute(0, 3, 1, 2)  # (N, C, H, W)
+        tensor = (tensor - self._imagenet_mean) / self._imagenet_std
+        input_tensor = tensor.half()
+
         with torch.no_grad():
             logits = self._model(input_tensor)
             probs = F.softmax(logits, dim=1).squeeze()
