@@ -1,9 +1,10 @@
 from itertools import chain
 from app.ruleset import Ruleset, MatchLeftRule, ScatterRule, AllSameRule, \
     MatchAnyPositionWithWildBonusRule, MatchLeftOrRightWithWildColumnRule, ExistsInEveryReelRule, \
-    MatchAnyWithPostScoringColumnReplaceRule
+    MatchAnyWithPostScoringColumnReplaceRule, MatchLeftWithBlockBonus, ScatterRuleWithBlockBonus, \
+    MatchLeftWithWildBonusRule, ExistsInAnyReelRule
 from fixture.predefined_slots import BLAZINGFRUITS, MEGAREELS, BELLS, MUMMY, MAJESTIC, BLAZINGHOT7, CRYSTALTREASURE, \
-    REELSDELUXE, ICEDFRUITS, REELS, GANGSTER, DRAGON, VULCAN, DISCO
+    REELSDELUXE, ICEDFRUITS, REELS, GANGSTER, DRAGON, VULCAN, DISCO, ENERGY, HELLS, POSEIDON, WORM
 
 predefined_rulesets = {}  # noqa
 
@@ -374,18 +375,18 @@ predefined_rulesets[CRYSTALTREASURE.name] = Ruleset(
             MatchAnyPositionWithWildBonusRule(symbol_index=0, payout=4, num_matches=3, wild_symbol=wild, multiplier=mult),
             MatchAnyPositionWithWildBonusRule(symbol_index=0, payout=20, num_matches=4, wild_symbol=wild, multiplier=mult),
             MatchAnyPositionWithWildBonusRule(symbol_index=0, payout=100, num_matches=5, wild_symbol=wild, multiplier=mult),
-            # Amethyst
-            MatchAnyPositionWithWildBonusRule(symbol_index=1, payout=1, num_matches=3, wild_symbol=wild, multiplier=mult),
-            MatchAnyPositionWithWildBonusRule(symbol_index=1, payout=5, num_matches=4, wild_symbol=wild, multiplier=mult),
-            MatchAnyPositionWithWildBonusRule(symbol_index=1, payout=20, num_matches=5, wild_symbol=wild, multiplier=mult),
+            # Amethyst - Now Blue Sapphire
+            MatchAnyPositionWithWildBonusRule(symbol_index=3, payout=1, num_matches=3, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=3, payout=5, num_matches=4, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=3, payout=20, num_matches=5, wild_symbol=wild, multiplier=mult),
             # Ruby
             MatchAnyPositionWithWildBonusRule(symbol_index=2, payout=2, num_matches=3, wild_symbol=wild, multiplier=mult),
             MatchAnyPositionWithWildBonusRule(symbol_index=2, payout=10, num_matches=4, wild_symbol=wild, multiplier=mult),
             MatchAnyPositionWithWildBonusRule(symbol_index=2, payout=40, num_matches=5, wild_symbol=wild, multiplier=mult),
-            # Sapphire
-            MatchAnyPositionWithWildBonusRule(symbol_index=3, payout=2, num_matches=3, wild_symbol=wild, multiplier=mult),
-            MatchAnyPositionWithWildBonusRule(symbol_index=3, payout=10, num_matches=4, wild_symbol=wild, multiplier=mult),
-            MatchAnyPositionWithWildBonusRule(symbol_index=3, payout=40, num_matches=5, wild_symbol=wild, multiplier=mult),
+            # Sapphire - Now Topaz Heart
+            MatchAnyPositionWithWildBonusRule(symbol_index=1, payout=2, num_matches=3, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=1, payout=10, num_matches=4, wild_symbol=wild, multiplier=mult),
+            MatchAnyPositionWithWildBonusRule(symbol_index=1, payout=40, num_matches=5, wild_symbol=wild, multiplier=mult),
             # Emerald
             MatchAnyPositionWithWildBonusRule(symbol_index=4, payout=1, num_matches=3, wild_symbol=wild, multiplier=mult),
             MatchAnyPositionWithWildBonusRule(symbol_index=4, payout=5, num_matches=4, wild_symbol=wild, multiplier=mult),
@@ -917,5 +918,235 @@ predefined_rulesets[DISCO.name] = Ruleset(
         MatchLeftRule(symbol_index=15, payout=0.4, num_matches=3, wild_symbol=9),
         MatchLeftRule(symbol_index=15, payout=2, num_matches=4, wild_symbol=9),
         MatchLeftRule(symbol_index=15, payout=8, num_matches=5, wild_symbol=9),
+    ]
+)
+
+
+predefined_rulesets[ENERGY.name] = Ruleset(
+    lines=[[0, 0, 0, 0],
+           [1, 1, 1, 1],
+           [2, 2, 2, 2],
+           [0, 1, 0, 1],
+           [2, 1, 1, 0],
+           [1, 0, 1, 0],
+           [1, 2, 1, 2],
+           [1, 0, 0, 1],
+           [1, 2, 2, 1],
+           [2, 2, 1, 1],
+           [1, 1, 0, 0],
+           [1, 1, 2, 2],
+           [2, 1, 2, 1],
+           [2, 1, 1, 2],
+           [2, 2, 1, 0],
+           [2, 1, 0, 0],
+           [2, 2, 0, 0],
+           [2, 0, 0, 2],
+           [0, 1, 2, 2],
+           [0, 0, 2, 2],
+           [0, 1, 1, 2],
+           [0, 0, 1, 1],
+           [0, 1, 1, 0],
+           [0, 0, 1, 2],
+           [0, 2, 2, 0],
+],
+    rules=[
+        # Cherry
+        MatchLeftRule(symbol_index=0, payout=0.6, num_matches=3),
+        MatchLeftRule(symbol_index=0, payout=2, num_matches=4),
+        # Lemon
+        MatchLeftRule(symbol_index=1, payout=0.8, num_matches=3),
+        MatchLeftRule(symbol_index=1, payout=3, num_matches=4),
+        # Watermelon
+        MatchLeftRule(symbol_index=2, payout=20, num_matches=3),
+        MatchLeftRule(symbol_index=2, payout=200, num_matches=4),
+        # Orange
+        MatchLeftRule(symbol_index=3, payout=1, num_matches=3),
+        MatchLeftRule(symbol_index=3, payout=6, num_matches=4),
+        # Plum
+        MatchLeftRule(symbol_index=4, payout=2, num_matches=3),
+        MatchLeftRule(symbol_index=4, payout=10, num_matches=4),
+        # Grape
+        MatchLeftRule(symbol_index=5, payout=6, num_matches=3),
+        MatchLeftRule(symbol_index=5, payout=40, num_matches=4),
+        # Pear
+        MatchLeftRule(symbol_index=6, payout=4, num_matches=3),
+        MatchLeftRule(symbol_index=6, payout=20, num_matches=4),
+        # Energy
+        MatchLeftRule(symbol_index=7, payout=0.6, num_matches=3),
+        MatchLeftRule(symbol_index=7, payout=1, num_matches=4),
+        # All Energy
+        AllSameRule(symbol_index=7, payout=240)
+    ]
+)
+
+
+predefined_rulesets[HELLS.name] = Ruleset(
+    lines=[[0, 1, 2, 1, 0],
+           [2, 1, 0, 1, 2],
+           [2, 2, 2, 2, 2],
+           [1, 1, 1, 1, 1],
+           [0, 0, 0, 0, 0],
+],
+    rules=[
+        # Cherry
+        MatchLeftWithBlockBonus(symbol_index=0, payout=2, num_matches=3, wild_symbol=8, block_bonuses=(3, 4, 5)),
+        MatchLeftWithBlockBonus(symbol_index=0, payout=5, num_matches=4, wild_symbol=8, block_bonuses=(3, 4, 5)),
+        MatchLeftWithBlockBonus(symbol_index=0, payout=20, num_matches=5, wild_symbol=8, block_bonuses=(3, 4, 5)),
+        # Lemon
+        MatchLeftWithBlockBonus(symbol_index=1, payout=2, num_matches=3, wild_symbol=8, block_bonuses=(3, 4, 5)),
+        MatchLeftWithBlockBonus(symbol_index=1, payout=7, num_matches=4, wild_symbol=8, block_bonuses=(3, 4, 5)),
+        MatchLeftWithBlockBonus(symbol_index=1, payout=25, num_matches=5, wild_symbol=8, block_bonuses=(3, 4, 5)),
+        # Watermelon
+        MatchLeftWithBlockBonus(symbol_index=2, payout=10, num_matches=3, wild_symbol=8, block_bonuses=(3, 4, 5)),
+        MatchLeftWithBlockBonus(symbol_index=2, payout=30, num_matches=4, wild_symbol=8, block_bonuses=(3, 4, 5)),
+        MatchLeftWithBlockBonus(symbol_index=2, payout=200, num_matches=5, wild_symbol=8, block_bonuses=(3, 4, 5)),
+        # Orange
+        MatchLeftWithBlockBonus(symbol_index=3, payout=3, num_matches=3, wild_symbol=8, block_bonuses=(3, 4, 5)),
+        MatchLeftWithBlockBonus(symbol_index=3, payout=8, num_matches=4, wild_symbol=8, block_bonuses=(3, 4, 5)),
+        MatchLeftWithBlockBonus(symbol_index=3, payout=30, num_matches=5, wild_symbol=8, block_bonuses=(3, 4, 5)),
+        # Plum
+        MatchLeftWithBlockBonus(symbol_index=4, payout=4, num_matches=3, wild_symbol=8, block_bonuses=(3, 4, 5)),
+        MatchLeftWithBlockBonus(symbol_index=4, payout=10, num_matches=4, wild_symbol=8, block_bonuses=(3, 4, 5)),
+        MatchLeftWithBlockBonus(symbol_index=4, payout=40, num_matches=5, wild_symbol=8, block_bonuses=(3, 4, 5)),
+        # Grape
+        MatchLeftWithBlockBonus(symbol_index=5, payout=5, num_matches=3, wild_symbol=8, block_bonuses=(3, 4, 5)),
+        MatchLeftWithBlockBonus(symbol_index=5, payout=20, num_matches=4, wild_symbol=8, block_bonuses=(3, 4, 5)),
+        MatchLeftWithBlockBonus(symbol_index=5, payout=60, num_matches=5, wild_symbol=8, block_bonuses=(3, 4, 5)),
+        # Star
+        ScatterRuleWithBlockBonus(symbol_index=6, payout=2, num_matches=3, block_bonuses=(3, 4, 5)),
+        ScatterRuleWithBlockBonus(symbol_index=6, payout=10, num_matches=4, block_bonuses=(3, 4, 5)),
+        ScatterRuleWithBlockBonus(symbol_index=6, payout=100, num_matches=5, block_bonuses=(3, 4, 5)),
+        # Seven
+        MatchLeftWithBlockBonus(symbol_index=7, payout=20, num_matches=3, wild_symbol=8, block_bonuses=(3, 4, 5)),
+        MatchLeftWithBlockBonus(symbol_index=7, payout=100, num_matches=4, wild_symbol=8, block_bonuses=(3, 4, 5)),
+        MatchLeftWithBlockBonus(symbol_index=7, payout=1000, num_matches=5, wild_symbol=8, block_bonuses=(3, 4, 5)),
+    ]
+)
+
+
+predefined_rulesets[POSEIDON.name] = Ruleset(
+    lines=[[0, 1, 2, 1, 0],
+           [2, 1, 0, 1, 2],
+           [2, 2, 2, 2, 2],
+           [1, 1, 1, 1, 1],
+           [0, 0, 0, 0, 0],
+],
+    rules=[
+        # 9
+        MatchLeftWithWildBonusRule(symbol_index=0, payout=1, num_matches=2, wild_symbol=9, wild_multiplier=2),
+        MatchLeftWithWildBonusRule(symbol_index=0, payout=2, num_matches=3, wild_symbol=9, wild_multiplier=2),
+        MatchLeftWithWildBonusRule(symbol_index=0, payout=4, num_matches=4, wild_symbol=9, wild_multiplier=2),
+        MatchLeftWithWildBonusRule(symbol_index=0, payout=20, num_matches=5, wild_symbol=9, wild_multiplier=2),
+        # 10
+        MatchLeftWithWildBonusRule(symbol_index=1, payout=1, num_matches=3, wild_symbol=9, wild_multiplier=2),
+        MatchLeftWithWildBonusRule(symbol_index=1, payout=4, num_matches=4, wild_symbol=9, wild_multiplier=2),
+        MatchLeftWithWildBonusRule(symbol_index=1, payout=20, num_matches=5, wild_symbol=9, wild_multiplier=2),
+        # J
+        MatchLeftWithWildBonusRule(symbol_index=2, payout=1, num_matches=3, wild_symbol=9, wild_multiplier=2),
+        MatchLeftWithWildBonusRule(symbol_index=2, payout=4, num_matches=4, wild_symbol=9, wild_multiplier=2),
+        MatchLeftWithWildBonusRule(symbol_index=2, payout=20, num_matches=5, wild_symbol=9, wild_multiplier=2),
+        # Q
+        MatchLeftWithWildBonusRule(symbol_index=3, payout=1, num_matches=3, wild_symbol=9, wild_multiplier=2),
+        MatchLeftWithWildBonusRule(symbol_index=3, payout=4, num_matches=4, wild_symbol=9, wild_multiplier=2),
+        MatchLeftWithWildBonusRule(symbol_index=3, payout=20, num_matches=5, wild_symbol=9, wild_multiplier=2),
+        # K
+        MatchLeftWithWildBonusRule(symbol_index=4, payout=1, num_matches=3, wild_symbol=9, wild_multiplier=2),
+        MatchLeftWithWildBonusRule(symbol_index=4, payout=8, num_matches=4, wild_symbol=9, wild_multiplier=2),
+        MatchLeftWithWildBonusRule(symbol_index=4, payout=30, num_matches=5, wild_symbol=9, wild_multiplier=2),
+        # A
+        MatchLeftWithWildBonusRule(symbol_index=5, payout=1, num_matches=3, wild_symbol=9, wild_multiplier=2),
+        MatchLeftWithWildBonusRule(symbol_index=5, payout=8, num_matches=4, wild_symbol=9, wild_multiplier=2),
+        MatchLeftWithWildBonusRule(symbol_index=5, payout=30, num_matches=5, wild_symbol=9, wild_multiplier=2),
+        # Clam
+        MatchLeftWithWildBonusRule(symbol_index=6, payout=1, num_matches=2, wild_symbol=9, wild_multiplier=2),
+        MatchLeftWithWildBonusRule(symbol_index=6, payout=3, num_matches=3, wild_symbol=9, wild_multiplier=2),
+        MatchLeftWithWildBonusRule(symbol_index=6, payout=16, num_matches=4, wild_symbol=9, wild_multiplier=2),
+        MatchLeftWithWildBonusRule(symbol_index=6, payout=160, num_matches=5, wild_symbol=9, wild_multiplier=2),
+        # Anchor
+        MatchLeftWithWildBonusRule(symbol_index=7, payout=3, num_matches=3, wild_symbol=9, wild_multiplier=2),
+        MatchLeftWithWildBonusRule(symbol_index=7, payout=15, num_matches=4, wild_symbol=9, wild_multiplier=2),
+        MatchLeftWithWildBonusRule(symbol_index=7, payout=80, num_matches=5, wild_symbol=9, wild_multiplier=2),
+        # Statue
+        MatchLeftWithWildBonusRule(symbol_index=9, payout=1, num_matches=2, wild_symbol=9, wild_multiplier=2),
+        MatchLeftWithWildBonusRule(symbol_index=9, payout=20, num_matches=3, wild_symbol=9, wild_multiplier=2),
+        MatchLeftWithWildBonusRule(symbol_index=9, payout=500, num_matches=4, wild_symbol=9, wild_multiplier=2),
+        MatchLeftWithWildBonusRule(symbol_index=9, payout=1800, num_matches=5, wild_symbol=9, wild_multiplier=2),
+        # Mermaid
+        MatchLeftWithWildBonusRule(symbol_index=10, payout=2, num_matches=3, wild_symbol=9, wild_multiplier=2),
+        MatchLeftWithWildBonusRule(symbol_index=10, payout=8, num_matches=4, wild_symbol=9, wild_multiplier=2),
+        MatchLeftWithWildBonusRule(symbol_index=10, payout=40, num_matches=5, wild_symbol=9, wild_multiplier=2),
+        # Chest
+        MatchLeftWithWildBonusRule(symbol_index=11, payout=2, num_matches=3, wild_symbol=9, wild_multiplier=2),
+        MatchLeftWithWildBonusRule(symbol_index=11, payout=8, num_matches=4, wild_symbol=9, wild_multiplier=2),
+        MatchLeftWithWildBonusRule(symbol_index=11, payout=40, num_matches=5, wild_symbol=9, wild_multiplier=2),
+        # Seashell
+        MatchLeftWithWildBonusRule(symbol_index=12, payout=1, num_matches=2, wild_symbol=9, wild_multiplier=2),
+        MatchLeftWithWildBonusRule(symbol_index=12, payout=3, num_matches=3, wild_symbol=9, wild_multiplier=2),
+        MatchLeftWithWildBonusRule(symbol_index=12, payout=16, num_matches=4, wild_symbol=9, wild_multiplier=2),
+        MatchLeftWithWildBonusRule(symbol_index=12, payout=160, num_matches=5, wild_symbol=9, wild_multiplier=2),
+        # Trident
+        ScatterRule(symbol_index=8, payout=2, num_matches=2, free_games_bonus=0),
+        ScatterRule(symbol_index=8, payout=5, num_matches=3, free_games_bonus=10, multiplier_3x_bonus=10),
+        ScatterRule(symbol_index=8, payout=20, num_matches=4, free_games_bonus=15, multiplier_3x_bonus=15),
+        ScatterRule(symbol_index=8, payout=500, num_matches=5, free_games_bonus=20, multiplier_3x_bonus=20),
+    ]
+)
+
+
+predefined_rulesets[WORM.name] = Ruleset(
+    lines=[[0, 1, 2, 1, 0],
+           [0, 0, 0, 0, 0],
+           [0, 1, 0, 1, 0],
+           [1, 0, 1, 0, 1],
+           [1, 1, 1, 1, 1],
+           [1, 1, 0, 1, 1],
+           [1, 2, 1, 2, 1],
+           [2, 1, 2, 1, 2],
+           [2, 2, 2, 2, 2],
+           [2, 1, 0, 1, 2],
+],
+    rules=[
+        # Cherry
+        MatchLeftRule(symbol_index=0, payout=1, num_matches=3, wild_symbol=10),
+        MatchLeftRule(symbol_index=0, payout=2, num_matches=4, wild_symbol=10),
+        MatchLeftRule(symbol_index=0, payout=8, num_matches=5, wild_symbol=10),
+        # Lemon
+        MatchLeftRule(symbol_index=1, payout=1, num_matches=3, wild_symbol=10),
+        MatchLeftRule(symbol_index=1, payout=2, num_matches=4, wild_symbol=10),
+        MatchLeftRule(symbol_index=1, payout=10, num_matches=5, wild_symbol=10),
+        # Watermelon
+        MatchLeftRule(symbol_index=2, payout=2, num_matches=3, wild_symbol=10),
+        MatchLeftRule(symbol_index=2, payout=8, num_matches=4, wild_symbol=10),
+        MatchLeftRule(symbol_index=2, payout=80, num_matches=5, wild_symbol=10),
+        # Orange
+        MatchLeftRule(symbol_index=3, payout=1, num_matches=3, wild_symbol=10),
+        MatchLeftRule(symbol_index=3, payout=3, num_matches=4, wild_symbol=10),
+        MatchLeftRule(symbol_index=3, payout=15, num_matches=5, wild_symbol=10),
+        # Plum
+        MatchLeftRule(symbol_index=4, payout=1, num_matches=3, wild_symbol=10),
+        MatchLeftRule(symbol_index=4, payout=7, num_matches=4, wild_symbol=10),
+        MatchLeftRule(symbol_index=4, payout=40, num_matches=5, wild_symbol=10),
+        # Pear
+        MatchLeftRule(symbol_index=5, payout=1, num_matches=3, wild_symbol=10),
+        MatchLeftRule(symbol_index=5, payout=5, num_matches=4, wild_symbol=10),
+        MatchLeftRule(symbol_index=5, payout=25, num_matches=5, wild_symbol=10),
+        # SingleBar
+        MatchLeftRule(symbol_index=6, payout=3, num_matches=3, wild_symbol=10),
+        MatchLeftRule(symbol_index=6, payout=20, num_matches=4, wild_symbol=10),
+        MatchLeftRule(symbol_index=6, payout=300, num_matches=5, wild_symbol=10),
+        # DoubleBar
+        MatchLeftRule(symbol_index=7, payout=5, num_matches=3, wild_symbol=10),
+        MatchLeftRule(symbol_index=7, payout=35, num_matches=4, wild_symbol=10),
+        MatchLeftRule(symbol_index=7, payout=500, num_matches=5, wild_symbol=10),
+        # TripleBar
+        MatchLeftRule(symbol_index=8, payout=10, num_matches=3, wild_symbol=10),
+        MatchLeftRule(symbol_index=8, payout=80, num_matches=4, wild_symbol=10),
+        MatchLeftRule(symbol_index=8, payout=1000, num_matches=5, wild_symbol=10),
+        # Bell
+        ScatterRule(symbol_index=9, payout=4, num_matches=3, free_games_bonus=10),
+        ScatterRule(symbol_index=9, payout=4, num_matches=4, free_games_bonus=15),
+        ScatterRule(symbol_index=9, payout=4, num_matches=5, free_games_bonus=20),
+        # Worm
+        ExistsInAnyReelRule(symbol_index=11, payout=0, scatter_doubler=True),
     ]
 )

@@ -14,7 +14,7 @@ from torchvision import datasets, models, transforms
 from torch.utils.data import DataLoader, random_split
 
 from fixture.predefined_slots import MUMMY, REELS, DRAGON, MAJESTIC, BELLS, GANGSTER, BLAZINGFRUITS, MEGAREELS, DISCO, \
-    REELSDELUXE, CRYSTALTREASURE, VULCAN, ICEDFRUITS
+    REELSDELUXE, CRYSTALTREASURE, VULCAN, ICEDFRUITS, BLAZINGHOT7, HELLS, WORM, POSEIDON, ENERGY
 
 
 def train_icon_classifier(
@@ -102,6 +102,6 @@ def train_icon_classifier(
 
 
 if __name__ == '__main__':
-    train_icon_classifier(dataset_dir=VULCAN.dataset_folder_path + '_augmented',
-                          output_model_path=VULCAN.model_path)
+    train_icon_classifier(dataset_dir=ENERGY.dataset_folder_path + '_augmented',
+                          output_model_path=ENERGY.model_path)
 

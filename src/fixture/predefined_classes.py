@@ -1,5 +1,5 @@
 from fixture.predefined_slots import BLAZINGHOT7, MUMMY, REELS, DISCO, DRAGON, MAJESTIC, BELLS, GANGSTER, BLAZINGFRUITS, \
-    MEGAREELS, REELSDELUXE, CRYSTALTREASURE, VULCAN, ICEDFRUITS
+    MEGAREELS, REELSDELUXE, CRYSTALTREASURE, VULCAN, ICEDFRUITS, HELLS, WORM, POSEIDON, ENERGY
 
 predefined_classes = {}
 predefined_classes[BLAZINGHOT7.name] = {0: 'cherry',
@@ -185,3 +185,49 @@ predefined_classes[ICEDFRUITS.name] = {0: 'Cherry',
                                        6: 'Bell',
                                        7: 'Seven',
                                        8: 'Wild'}
+
+predefined_classes[WORM.name] = {0: 'Cherry',
+                                 1: 'Lemon',
+                                 2: 'Watermelon',
+                                 3: 'Orange',
+                                 4: 'Plum',
+                                 5: 'Pear',
+                                 6: 'SingleBar',
+                                 7: 'DoubleBar',
+                                 8: 'TripleBar',
+                                 9: 'Bell',
+                                 10: 'Joker',
+                                 11: 'Worm'}
+
+predefined_classes[HELLS.name] = {0: 'Cherry',
+                                  1: 'Lemon',
+                                  2: 'Watermelon',
+                                  3: 'Orange',
+                                  4: 'Plum',
+                                  5: 'Grape',
+                                  6: 'Star',
+                                  7: 'Seven',
+                                  8: 'Wild'}
+
+predefined_classes[POSEIDON.name] = {0: '9',
+                                     1: '10',
+                                     2: 'J',
+                                     3: 'Q',
+                                     4: 'K',
+                                     5: 'A',
+                                     6: 'Clam',
+                                     7: 'Anchor',
+                                     8: 'Trident',
+                                     9: 'Statue',
+                                     10: 'Mermaid',
+                                     11: 'Chest',
+                                     12: 'Seashell'}
+
+predefined_classes[ENERGY.name] = {0: 'Cherry',
+                                   1: 'Lemon',
+                                   2: 'Watermelon',
+                                   3: 'Orange',
+                                   4: 'Plum',
+                                   5: 'Grape',
+                                   6: 'Pear',
+                                   7: 'Energy'}

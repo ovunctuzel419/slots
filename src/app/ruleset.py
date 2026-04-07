@@ -4,6 +4,7 @@ from typing import List, Tuple, Dict
 import attrs
 import numpy as np
 from attrs import define
+from torch.distributed.nn import scatter
 
 from utils.custom_types import IconSet
 
@@ -15,8 +16,10 @@ class PayoutEstimate:
     payout: float
     free_games: int = 0
     multiplier_2x: int = 0
+    multiplier_3x: int = 0
     mystery_multiplier_count: int = 0
     next_round_column_replace_bonus: Dict[int, int] = attrs.field(factory=dict)  # Change column [key] to [value] next round
+    scatter_doubler: bool = False
 
     @classmethod
     def no_reward(cls) -> 'PayoutEstimate':
@@ -27,8 +30,10 @@ class PayoutEstimate:
             payout=self.payout + other.payout,
             free_games=self.free_games + other.free_games,
             multiplier_2x=self.multiplier_2x + other.multiplier_2x,
+            multiplier_3x=self.multiplier_3x + other.multiplier_3x,
             mystery_multiplier_count=self.mystery_multiplier_count + other.mystery_multiplier_count,
-            next_round_column_replace_bonus=self.next_round_column_replace_bonus | other.next_round_column_replace_bonus
+            next_round_column_replace_bonus=self.next_round_column_replace_bonus | other.next_round_column_replace_bonus,
+            scatter_doubler=self.scatter_doubler | other.scatter_doubler
         )
 
 
@@ -38,8 +43,10 @@ class Rule(ABC):
     payout: float
     free_games_bonus: int = 0
     multiplier_2x_bonus: int = 0
+    multiplier_3x_bonus: int = 0
     mystery_multiplier_count: int = 0
     next_round_column_replace_bonus: Dict[int, int] = attrs.field(factory=dict)
+    scatter_doubler: bool = False
 
     @abstractmethod
     def calculate_payout(self, icon_set: IconSet, line: Line) -> PayoutEstimate:
@@ -61,8 +68,10 @@ class Rule(ABC):
         return PayoutEstimate(payout=self.payout,
                               free_games=self.free_games_bonus,
                               multiplier_2x=self.multiplier_2x_bonus,
+                              multiplier_3x=self.multiplier_3x_bonus,
                               mystery_multiplier_count=self.mystery_multiplier_count,
-                              next_round_column_replace_bonus=self.next_round_column_replace_bonus)
+                              next_round_column_replace_bonus=self.next_round_column_replace_bonus,
+                              scatter_doubler=self.scatter_doubler)
 
 
 @define(kw_only=True)
@@ -81,6 +90,40 @@ class MatchLeftRule(Rule):
             print(f"Matched rule {self}, iconset: {icon_set}, line: {line}, payout: {self.get_payout()}")
             return self.get_payout()
         return PayoutEstimate.no_reward()
+
+
+@define(kw_only=True)
+class MatchLeftWithWildBonusRule(MatchLeftRule):
+    wild_multiplier: float = 1.0
+
+    def calculate_payout(self, icon_set: IconSet, line: Line) -> PayoutEstimate:
+        match_left_payout = super().calculate_payout(icon_set, line)
+        symbols = icon_set[np.array(line), np.arange(len(line))]
+
+        wild_used = np.isin(self.wild_symbol, symbols)
+        if wild_used:
+            return PayoutEstimate(match_left_payout.payout * self.wild_multiplier)
+        return match_left_payout
+
+
+@define(kw_only=True)
+class MatchLeftWithBlockBonus(MatchLeftRule):
+    block_bonuses: Tuple[int, int, int]  # Bonus for block of 3, 4, 5
+
+    def calculate_payout(self, icon_set: IconSet, line: Line) -> PayoutEstimate:
+        assert icon_set.shape[1] == 5  # Only works for 5 column games
+
+        match_left_payout = super().calculate_payout(icon_set, line)
+
+        multiplier = 1
+        if np.all(icon_set == self.symbol_index):
+            multiplier = self.block_bonuses[2]
+        elif np.all(icon_set[:, :4] == self.symbol_index):
+            multiplier = self.block_bonuses[1]
+        elif np.all(icon_set[:, :3] == self.symbol_index):
+            multiplier = self.block_bonuses[0]
+
+        return PayoutEstimate(match_left_payout.payout * multiplier)
 
 
 @define(kw_only=True)
@@ -106,6 +149,14 @@ class ExistsInEveryReelRule(Rule):
 
     def scores_every_line(self) -> bool:
         return False
+
+
+@define(kw_only=True)
+class ExistsInAnyReelRule(Rule):
+    def calculate_payout(self, icon_set: IconSet, line: Line) -> PayoutEstimate:
+        if np.any(icon_set == self.symbol_index):
+            return self.get_payout()
+        return PayoutEstimate.no_reward()
 
 
 @define(kw_only=True)
@@ -249,6 +300,25 @@ class ScatterRule(Rule):
 
 
 @define(kw_only=True)
+class ScatterRuleWithBlockBonus(ScatterRule):
+    block_bonuses: Tuple[int, int, int]  # Bonus for block of 3, 4, 5
+
+    def calculate_payout(self, icon_set: IconSet, line: Line) -> PayoutEstimate:
+        assert icon_set.shape[1] == 5  # Only works for 5 column games
+
+        scatter_payout = super().calculate_payout(icon_set, line)
+
+        multiplier = 1
+        if np.all(icon_set == icon_set[0, 0]):
+            multiplier = self.block_bonuses[2]
+        elif np.all(icon_set[:, :4] == icon_set[0, 0]):
+            multiplier = self.block_bonuses[1]
+        elif np.all(icon_set[:, :3] == icon_set[0, 0]):
+            multiplier = self.block_bonuses[0]
+
+        return PayoutEstimate(scatter_payout.payout * multiplier)
+
+@define(kw_only=True)
 class Ruleset:
     lines: List[Line]
     rules: List[Rule]
@@ -281,7 +351,7 @@ class Ruleset:
                     if not is_first_pass and not rule.is_second_pass_rule():
                         continue
                     payout = rule.calculate_payout(icon_set, line)
-                    if payout.payout > best_payout_amount:
+                    if payout.payout > best_payout_amount or payout.scatter_doubler:
                         best_payout_amount = payout.payout
                         best_payout = payout
                 total_payout += best_payout

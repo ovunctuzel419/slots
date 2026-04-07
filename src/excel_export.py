@@ -4,11 +4,12 @@ import time
 
 from classification import TrainedClassifier
 from fixture.predefined_extractors import extractor_map
-from fixture.predefined_slots import BLAZINGHOT7, MUMMY, REELS, DRAGON, MAJESTIC, BELLS, GANGSTER, BLAZINGFRUITS, MEGAREELS, \
-    DISCO, CRYSTALTREASURE, REELSDELUXE, VULCAN, ICEDFRUITS
+from fixture.predefined_slots import BLAZINGHOT7, MUMMY, REELS, DRAGON, MAJESTIC, BELLS, GANGSTER, BLAZINGFRUITS, \
+    MEGAREELS, DISCO, CRYSTALTREASURE, REELSDELUXE, VULCAN, ICEDFRUITS, HELLS, WORM, POSEIDON, ENERGY
+
 
 if __name__ == '__main__':
-    slots_game = VULCAN
+    slots_game = MUMMY
     output_file = f'{slots_game.name}.csv'
 
     extractor = extractor_map[slots_game.name]
@@ -31,6 +32,7 @@ if __name__ == '__main__':
                     writer.writerow([frame_index] + [-1 for _ in range(num_cols * num_rows)])
                     frame_index += 1
 
+            print(frame_index is None)
             print("Processing frame", frame_index)
             icons = extractor.icon_extractor.extract_icons(frame)
             predictions = classifier.classify_batch(icons)

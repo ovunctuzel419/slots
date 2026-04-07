@@ -184,9 +184,11 @@ class SlotPredictor:
     def build_payout_string(self, payout_index: int, payout_estimate: PayoutEstimate) -> str:
         payout = payout_estimate.payout
         multiplier_2x = payout_estimate.multiplier_2x
+        multiplier_3x = payout_estimate.multiplier_3x
         free_games = payout_estimate.free_games
         mystery_mult_ct = payout_estimate.mystery_multiplier_count
         multiplier_text = "" if multiplier_2x <= 0 else f" [x2 ({multiplier_2x})]"
+        multiplier_text += "" if multiplier_3x <= 0 else f" [x3 ({multiplier_3x})]"
         free_games_text = "" if free_games <= 0 else f" [FREE {free_games}x] "
         mystery_bonus_text = "" if mystery_mult_ct <= 0 else f" [MULT {mystery_mult_ct}x]"
         return f"{payout_index}: {payout}" + multiplier_text + free_games_text + mystery_bonus_text
@@ -323,17 +325,9 @@ class SlotPredictor:
 
     def on_debug_click(self):
         print("Clicked debug button")
-        # self.context.current_icon_set = np.array(([0, 5, 0, 11, 1],
-        #                                           [7, 15, 12, 5, 2],
-        #                                           [1, 0, 1, 0, 12],
-        #                                           [15, 6, 8, 15, 1]))
-        self.context.current_icon_set = np.array(([6, 0, 5, 11, 10],
-                                                  [10, 10, 6, 4, 0],
-                                                  [5, 3, 0, 6, 5],
-                                                  [2, 7, 9, 1, 4]))
-        # self.context.current_icon_set = np.array(([3, 10, 8, 5, 0],
-        #                                           [8, 1, 8, 2, 7],
-        #                                           [9, 4, 8, 10, 10]))
+        self.context.current_icon_set = np.array(([9, 10, 9, 9, 5],
+                                                  [1, 4, 4, 2, 3],
+                                                  [4, 2, 5, 0, 0]))
         self.set_context(self.context)
 
     def check_password(self):
@@ -409,10 +403,10 @@ class SlotPredictor:
                             # Bet selection
                             with dpg.group(horizontal=False):
                                 dpg.add_text("Choose bet:")
-                                dpg.add_radio_button(
+                                dpg.add_combo(
+                                    width=64,
                                     items=["50", "100", "200"],
                                     default_value="50",
-                                    horizontal=True,  # or False for vertical layout
                                     tag="bet_options",
                                     callback=lambda s, a: self.on_bet_click(int(a))
                                 )

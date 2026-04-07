@@ -33,7 +33,7 @@ class PayoutEstimator:
     _payout_cache: Dict[int, PayoutEstimate] = attrs.field(factory=dict)
     _lru_cache: Dict[Tuple[int, int], PayoutEstimate] = attrs.field(factory=dict)
     _current_free_spins: int = 0
-    _multiplier_2x_remaining: int = 0
+    _free_games_running_total: int = 0
 
     @classmethod
     def from_game(cls, game: SlotsGame, csv_reader: Optional[CSVReader] = None) -> Optional["PayoutEstimator"]:
@@ -72,7 +72,9 @@ class PayoutEstimator:
             icon_set_i = self._icon_sets[i].copy()
 
             # 1. Pay for the spin (unless free)
+            is_free_game = False
             if total.free_games > 0:
+                is_free_game = True
                 total.free_games -= 1
             else:
                 total.payout -= 1
@@ -84,10 +86,23 @@ class PayoutEstimator:
 
             # 3. Get raw reward
             reward = self.ruleset.calculate_payout(icon_set_i)
-            # 4. Apply multiplier
+            # 4. Apply multipliers
             if total.multiplier_2x > 0:
                 reward.payout *= 2
                 total.multiplier_2x = max(0, total.multiplier_2x - 1)
+            if total.multiplier_3x > 0:
+                reward.payout *= 3
+                total.multiplier_3x = max(0, total.multiplier_3x - 1)
+
+            # 4.5 Scatter Double Bonus
+            # If this was a free game (or gives free games), keep track of rewards obtained during free games
+            if is_free_game or reward.free_games > 0:
+                self._free_games_running_total += reward.payout
+                if reward.scatter_doubler:
+                    total += PayoutEstimate(payout=self._free_games_running_total)
+                    self._free_games_running_total += self._free_games_running_total
+            else:
+                self._free_games_running_total = 0
 
             # 5. Accumulate
             total += reward
@@ -105,6 +120,7 @@ class PayoutEstimator:
             payout=int(round(total.payout * bet)),
             free_games=total.free_games,
             multiplier_2x=total.multiplier_2x,
+            multiplier_3x=total.multiplier_3x,
             mystery_multiplier_count=total.mystery_multiplier_count,
             next_round_column_replace_bonus=total.next_round_column_replace_bonus
         )

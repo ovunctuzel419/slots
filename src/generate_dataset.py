@@ -10,7 +10,7 @@ from classification import TrainedClassifier
 from fixture.predefined_classes import predefined_classes
 from fixture.predefined_extractors import extractor_map
 from fixture.predefined_slots import DEMO, MUMMY, REELS, DRAGON, MAJESTIC, BELLS, GANGSTER, BLAZINGFRUITS, MEGAREELS, \
-    DISCO, CRYSTALTREASURE, REELSDELUXE, VULCAN, ICEDFRUITS
+    DISCO, CRYSTALTREASURE, REELSDELUXE, VULCAN, ICEDFRUITS, BLAZINGHOT7, HELLS, WORM, POSEIDON, ENERGY
 from utils.custom_types import BGRImageArray
 
 
@@ -49,12 +49,13 @@ key_to_index = {ord('0'): 0,
             }
 index_to_key = {value: key for key, value in key_to_index.items()}
 
+
 if __name__ == '__main__':
-    game = REELS
+    game = ENERGY
     video_path = game.video_folder_path
     extractor = extractor_map[game.name]
     # Optionally defined a classifier for active learning
-    classifier = TrainedClassifier(game.model_path, rows=extractor.icon_extractor.grid_crop.rows, cols=extractor.icon_extractor.grid_crop.cols)
+    classifier = None # TrainedClassifier(game.model_path, rows=extractor.icon_extractor.grid_crop.rows, cols=extractor.icon_extractor.grid_crop.cols)
 
     classes = predefined_classes[game.name]
     print(f'Classes:\n' + str.join('\n', [f'{chr(index_to_key[index])}: {class_name}' for index, class_name in classes.items()]))

@@ -4,7 +4,7 @@ import numpy as np
 
 from fixture.predefined_rulesets import predefined_rulesets
 from fixture.predefined_slots import MEGAREELS, MUMMY, MAJESTIC, BLAZINGHOT7, CRYSTALTREASURE, ICEDFRUITS, GANGSTER, \
-    DRAGON, VULCAN, DISCO, BELLS
+    DRAGON, VULCAN, DISCO, BELLS, HELLS
 
 
 class TestMegaReels(unittest.TestCase):
@@ -347,3 +347,24 @@ class TestDisco(unittest.TestCase):
         payout = self.ruleset.calculate_payout(icon_set)
         self.assertEqual(28800, int(round(payout.payout * self.bet)))
 
+
+class TestHells(unittest.TestCase):
+    def setUp(self):
+        self.ruleset = predefined_rulesets[HELLS.name]
+        self.bet = 100
+
+    def test_block_bonus(self):
+        icon_set = np.array([[0, 0, 0, 3, 3],
+                             [0, 0, 0, 4, 4],
+                             [0, 0, 0, 0, 5]])
+
+        payout = int(round(self.ruleset.calculate_payout(icon_set).payout * self.bet))
+        self.assertEqual(3900, payout)
+
+    def test_block_bonus_with_scatter(self):
+        icon_set = np.array([[0, 0, 0, 3, 6],
+                             [0, 0, 0, 6, 4],
+                             [0, 0, 0, 0, 6]])
+
+        payout = int(round(self.ruleset.calculate_payout(icon_set).payout * self.bet))
+        self.assertEqual(4500, payout)

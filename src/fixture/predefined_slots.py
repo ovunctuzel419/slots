@@ -14,7 +14,7 @@ class SlotsGame:
     model_path: str
     rows: int
     cols: int
-    bets: List[int] = [50, 100, 200]
+    bets: List[int] = [20, 25, 40, 50, 100, 200]
 
     def get_video_filepaths(self) -> Union[List[str], str]:
         if os.path.isdir(self.video_folder_path):
@@ -35,15 +35,14 @@ DEMO = SlotsGame(name='DEMO',
                  cols=5)
 
 BLAZINGHOT7 = SlotsGame(name='BLAZINGHOT7',
-                        video_folder_path='E:/Slots/blazing7.mp4',
-                        dataset_folder_path=resource_path('dataset/Fruit'),
-                        model_path=resource_path('models/Fruit.pth'),
+                        video_folder_path='../videos/BlazingHot7.mp4',
+                        dataset_folder_path=resource_path('dataset/BlazingHot7.mp4'),
+                        model_path=resource_path('models/BlazingHot7.pth'),
                         rows=3,
-                        cols=5,
-                        bets=[60, 100, 200])
+                        cols=5)
 
 MUMMY = SlotsGame(name='MUMMY',
-                  video_folder_path='E:/Slots/mummy.mp4',
+                  video_folder_path='../videos/Mummy.mp4',
                   dataset_folder_path=resource_path('dataset/mummy.mp4'),
                   model_path=resource_path('models/Mummy.pth'),
                   rows=3,
@@ -78,8 +77,8 @@ MAJESTIC = SlotsGame(name='MAJESTIC',
                      cols=3)
 
 MEGAREELS = SlotsGame(name='MEGAREELS',
-                      video_folder_path='E:/Slots/megarells.mp4',
-                      dataset_folder_path=resource_path('dataset/Megareels.mp4'),
+                      video_folder_path='../videos/Megareels.mp4',
+                      dataset_folder_path=resource_path('dataset/MegareelsNew.mp4'),
                       model_path=resource_path('models/Megareels.pth'),
                       rows=3,
                       cols=3)
@@ -92,35 +91,35 @@ BELLS = SlotsGame(name='BELLS',
                   cols=5)
 
 GANGSTER = SlotsGame(name='GANGSTER',
-                     video_folder_path='E:/Slots/Gangster.mp4',
+                     video_folder_path='../videos/Gangster.mp4',
                      dataset_folder_path=resource_path('dataset/Gangster HD.mp4'),
                      model_path=resource_path('models/Gangster.pth'),
                      rows=3,
                      cols=5)
 
 BLAZINGFRUITS = SlotsGame(name='BLAZINGFRUITS',
-                          video_folder_path='E:/Slots/blazingfruits.mp4',
+                          video_folder_path='../videos/BlazingFruits.mp4',
                           dataset_folder_path=resource_path('dataset/BlazingFruits.mp4'),
                           model_path=resource_path('models/BlazingFruits.pth'),
                           rows=3,
                           cols=5)
 
 CRYSTALTREASURE = SlotsGame(name='CRYSTALTREASURE',
-                            video_folder_path='E:/Slots/crystaltreasure.mp4',
+                            video_folder_path='../videos/CrystalTreasure.mp4',
                             dataset_folder_path=resource_path('dataset/crystaltreasure.mp4'),
                             model_path=resource_path('models/crystaltreasure.pth'),
                             rows=3,
                             cols=5)
 
 REELSDELUXE = SlotsGame(name='REELSDELUXE',
-                        video_folder_path='E:/Slots/reelsdelux.mp4',
-                        dataset_folder_path=resource_path('dataset/reelsdelux.mp4'),
-                        model_path=resource_path('models/reelsdelux.pth'),
+                        video_folder_path='../videos/CrystalReelsDeluxe.mp4',
+                        dataset_folder_path=resource_path('dataset/CrystalReelsDeluxe.mp4'),
+                        model_path=resource_path('models/CrystalReelsDeluxe.pth'),
                         rows=3,
                         cols=5)
 
 VULCAN = SlotsGame(name='VULCAN',
-                   video_folder_path='E:/OneDrive/videos/Vulcan.mp4',
+                   video_folder_path='E:/OneDrive/../videos/Vulcan.mp4',
                    dataset_folder_path=resource_path('dataset/Vulcan.mp4'),
                    model_path=resource_path('models/Vulcan.pth'),
                    rows=3,
@@ -128,28 +127,60 @@ VULCAN = SlotsGame(name='VULCAN',
 
 
 ICEDFRUITS = SlotsGame(name='ICEDFRUITS',
-                       video_folder_path='E:/Slots/iced.mp4',
-                       dataset_folder_path=resource_path('dataset/Ice.mp4'),
+                       video_folder_path='../videos/IcedFruits.mp4',
+                       dataset_folder_path=resource_path('dataset/IcedFruits.mp4'),
                        model_path=resource_path('models/Ice.pth'),
                        rows=3,
                        cols=5)
 
+WORM = SlotsGame(name='WORM',
+                 video_folder_path='../videos/Worm.mp4',
+                 dataset_folder_path=resource_path('dataset/Worm.mp4'),
+                 model_path=resource_path('models/Worm.pth'),
+                 rows=3,
+                 cols=5)
+
+HELLS = SlotsGame(name='HELLS',
+                   video_folder_path='../videos/Hells.mp4',
+                   dataset_folder_path=resource_path('dataset/Hells.mp4'),
+                   model_path=resource_path('models/Hells.pth'),
+                   rows=3,
+                   cols=5)
+
+POSEIDON = SlotsGame(name='POSEIDON',
+                     video_folder_path='../videos/Poseidon.mp4',
+                     dataset_folder_path=resource_path('dataset/Poseidon.mp4'),
+                     model_path=resource_path('models/Poseidon.pth'),
+                     rows=3,
+                     cols=5)
+
+ENERGY = SlotsGame(name='ENERGY',
+                   video_folder_path='../videos/Energy.mp4',
+                   dataset_folder_path=resource_path('dataset/Energy.mp4'),
+                   model_path=resource_path('models/Energy.pth'),
+                   rows=3,
+                   cols=4)
+
 
 available_games = [
     MUMMY,
-    BELLS,
-    MAJESTIC,
+    # BELLS,
+    # MAJESTIC,
     BLAZINGFRUITS,
     MEGAREELS,
     BLAZINGHOT7,
     CRYSTALTREASURE,
-    REELS,
+    # REELS,
     REELSDELUXE,
     ICEDFRUITS,
     GANGSTER,
     # VULCAN,
-    DISCO,
-    DRAGON
+    # DISCO,
+    # DRAGON
+    WORM,
+    HELLS,
+    POSEIDON,
+    ENERGY
 ]
 
 
