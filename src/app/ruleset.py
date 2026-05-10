@@ -82,7 +82,9 @@ class MatchLeftRule(Rule):
     def calculate_payout(self, icon_set: IconSet, line: Line) -> PayoutEstimate:
         icon_set = icon_set.copy()
         if self.wild_symbol != -1:
-            icon_set = np.where(icon_set == self.wild_symbol, self.symbol_index, icon_set)
+            # Wild substitution is only allowed if the symbol actually exists in the line
+            if self.symbol_index in icon_set[np.array(line), np.arange(len(line))]:
+                icon_set = np.where(icon_set == self.wild_symbol, self.symbol_index, icon_set)
 
         symbols = icon_set[np.array(line), np.arange(len(line))]
         next_differs = (self.num_matches == len(symbols) or symbols[self.num_matches] != self.symbol_index)
@@ -153,6 +155,11 @@ class ExistsInEveryReelRule(Rule):
 
 @define(kw_only=True)
 class ExistsInAnyReelRule(Rule):
+    triggers_after_other_rules: bool = True
+
+    def is_second_pass_rule(self) -> bool:
+        return self.triggers_after_other_rules
+
     def calculate_payout(self, icon_set: IconSet, line: Line) -> PayoutEstimate:
         if np.any(icon_set == self.symbol_index):
             return self.get_payout()

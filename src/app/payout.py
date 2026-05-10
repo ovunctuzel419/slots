@@ -100,9 +100,12 @@ class PayoutEstimator:
                 self._free_games_running_total += reward.payout
                 if reward.scatter_doubler:
                     total += PayoutEstimate(payout=self._free_games_running_total)
-                    self._free_games_running_total += self._free_games_running_total
-            else:
-                self._free_games_running_total = 0
+                    self._free_games_running_total *= 2
+
+            # Clear running total if this is the last free game
+            if is_free_game and total.free_games == 0:
+                if self._free_games_running_total > 0:
+                    self._free_games_running_total = 0
 
             # 5. Accumulate
             total += reward

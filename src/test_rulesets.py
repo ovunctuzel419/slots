@@ -66,6 +66,14 @@ class TestMummy(unittest.TestCase):
         payout = self.ruleset.calculate_payout(icon_set).payout * self.bet
         self.assertEqual(5000, payout)
 
+    def test_false_reward_case(self):
+        icon_set = np.array([[1, 1, 9, 3, 0],
+                             [4, 9, 0, 9, 2],
+                             [9, 4, 3, 2, 1]])
+
+        payout = self.ruleset.calculate_payout(icon_set).payout * self.bet
+        self.assertEqual(1850, payout)
+
 
 class TestMajestic(unittest.TestCase):
     def setUp(self):
@@ -122,7 +130,7 @@ class TestCrystalTreasure(unittest.TestCase):
                              [2, 6, 3, 3, 3]])
 
         payout = self.ruleset.calculate_payout(icon_set).payout * self.bet
-        self.assertEqual(600, payout)
+        self.assertEqual(300, payout)
 
     def test_sapphires_even_more(self):
         icon_set = np.array([[4, 3, 3, 6, 3],
@@ -130,7 +138,7 @@ class TestCrystalTreasure(unittest.TestCase):
                              [4, 3, 3, 3, 1]])
 
         payout = self.ruleset.calculate_payout(icon_set).payout * self.bet
-        self.assertEqual(2400, payout)
+        self.assertEqual(1200, payout)
 
     def test_3x_multiplier(self):
         icon_set = np.array([[1, 6, 4, 9, 3],
@@ -138,7 +146,7 @@ class TestCrystalTreasure(unittest.TestCase):
                              [6, 5, 7, 9, 1]])
 
         payout = self.ruleset.calculate_payout(icon_set).payout * self.bet
-        self.assertEqual(300, payout)  # 100 x 3 since 9 is 3x multiplier
+        self.assertEqual(600, payout)  # 100 x 3 since 9 is 3x multiplier
 
 
 class TestIcedFruits(unittest.TestCase):

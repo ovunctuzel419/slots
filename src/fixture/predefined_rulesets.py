@@ -1147,6 +1147,6 @@ predefined_rulesets[WORM.name] = Ruleset(
         ScatterRule(symbol_index=9, payout=4, num_matches=4, free_games_bonus=15),
         ScatterRule(symbol_index=9, payout=4, num_matches=5, free_games_bonus=20),
         # Worm
-        ExistsInAnyReelRule(symbol_index=11, payout=0, scatter_doubler=True),
+        ExistsInAnyReelRule(symbol_index=11, payout=0, scatter_doubler=True, triggers_after_other_rules=True),
     ]
 )

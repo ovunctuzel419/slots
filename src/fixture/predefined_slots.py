@@ -39,7 +39,8 @@ BLAZINGHOT7 = SlotsGame(name='BLAZINGHOT7',
                         dataset_folder_path=resource_path('dataset/BlazingHot7.mp4'),
                         model_path=resource_path('models/BlazingHot7.pth'),
                         rows=3,
-                        cols=5)
+                        cols=5,
+                        bets=[20, 25, 40, 60, 100, 200])
 
 MUMMY = SlotsGame(name='MUMMY',
                   video_folder_path='../videos/Mummy.mp4',
